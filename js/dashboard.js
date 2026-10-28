@@ -286,20 +286,228 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ==========================================================================
+  // CLOUD DATABASE (FIREBASE FIRESTORE) CONTROLLER
+  // ==========================================================================
+  const cloudSyncBtn = document.getElementById('cloudSyncBtn');
+  const cloudModal = document.getElementById('cloudModal');
+  const closeCloudModal = document.getElementById('closeCloudModal');
+  const cloudStatusDot = document.getElementById('cloudStatusDot');
+  const cloudStatusText = document.getElementById('cloudStatusText');
+  const cloudStatusBanner = document.getElementById('cloudStatusBanner');
+  const cloudBannerDot = document.getElementById('cloudBannerDot');
+  const cloudBannerTitle = document.getElementById('cloudBannerTitle');
+  const cloudBannerDesc = document.getElementById('cloudBannerDesc');
+  const firebaseConfigInput = document.getElementById('firebaseConfigInput');
+  const saveCloudConfigBtn = document.getElementById('saveCloudConfigBtn');
+  const disconnectCloudBtn = document.getElementById('disconnectCloudBtn');
+  const uploadLocalBtn = document.getElementById('uploadLocalBtn');
+  const cloudFeedbackMsg = document.getElementById('cloudFeedbackMsg');
+
+  function updateCloudUI() {
+    const isConfigured = window.CloudDB && window.CloudDB.isConfigured();
+    const isOnline = window.CloudDB && window.CloudDB.isInitialized;
+
+    if (cloudStatusDot && cloudStatusText) {
+      if (isOnline) {
+        cloudStatusDot.className = 'status-dot dot-online';
+        cloudStatusText.textContent = 'क्लाउड सिंक सुरू (Online)';
+      } else if (isConfigured) {
+        cloudStatusDot.className = 'status-dot dot-offline';
+        cloudStatusText.textContent = 'कनेक्ट करत आहे...';
+      } else {
+        cloudStatusDot.className = 'status-dot dot-offline';
+        cloudStatusText.textContent = 'लोकल मोड (Offline)';
+      }
+    }
+
+    if (cloudStatusBanner) {
+      if (isOnline) {
+        cloudStatusBanner.className = 'cloud-status-banner banner-connected';
+        if (cloudBannerDot) cloudBannerDot.className = 'status-dot dot-online';
+        if (cloudBannerTitle) cloudBannerTitle.textContent = 'क्लाउड कनेक्टेड (Firebase Firestore Active)';
+        if (cloudBannerDesc) cloudBannerDesc.textContent = 'डेटा सुरक्षितपणे Google Firebase Firestore वर रिअल-टाइम सिंक होत आहे.';
+        if (disconnectCloudBtn) disconnectCloudBtn.style.display = 'inline-block';
+        if (uploadLocalBtn) uploadLocalBtn.style.display = 'inline-block';
+      } else {
+        cloudStatusBanner.className = 'cloud-status-banner banner-local';
+        if (cloudBannerDot) cloudBannerDot.className = 'status-dot dot-offline';
+        if (cloudBannerTitle) cloudBannerTitle.textContent = 'लोकल स्टोरेज मोड (Local Storage Mode)';
+        if (cloudBannerDesc) cloudBannerDesc.textContent = 'डेटा सध्या तुमच्या ब्राऊझरमध्ये स्थानिक पातळीवर सुरक्षित आहे. इतर डिव्हाइसेसवर डेटा सिंक करण्यासाठी खाली मोफत Firebase जोडा.';
+        if (disconnectCloudBtn) disconnectCloudBtn.style.display = 'none';
+        if (uploadLocalBtn) uploadLocalBtn.style.display = 'none';
+      }
+    }
+  }
+
+  function parseConfigInput(raw) {
+    if (!raw || !raw.trim()) return null;
+    let text = raw.trim();
+
+    // If pasted JS like: const firebaseConfig = { ... };
+    if (text.includes('{') && text.includes('}')) {
+      const startIndex = text.indexOf('{');
+      const endIndex = text.lastIndexOf('}');
+      text = text.substring(startIndex, endIndex + 1);
+    }
+
+    // Try JSON.parse
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      // Fallback for JS object syntax (keys not quoted)
+      try {
+        const fn = new Function('return ' + text);
+        return fn();
+      } catch (err) {
+        throw new Error('अवैध कॉन्फिग फॉरमॅट! कृपया Firebase कन्सोलवरून अचूक कोड पेस्ट करा.');
+      }
+    }
+  }
+
+  function showCloudFeedback(msg, isSuccess = true) {
+    if (!cloudFeedbackMsg) return;
+    cloudFeedbackMsg.style.display = 'block';
+    cloudFeedbackMsg.style.background = isSuccess ? '#ecfdf5' : '#fef2f2';
+    cloudFeedbackMsg.style.color = isSuccess ? '#065f46' : '#b91c1c';
+    cloudFeedbackMsg.style.border = isSuccess ? '1px solid #a7f3d0' : '1px solid #fecaca';
+    cloudFeedbackMsg.textContent = msg;
+  }
+
+  if (cloudSyncBtn && cloudModal) {
+    cloudSyncBtn.addEventListener('click', () => {
+      cloudModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      if (cloudFeedbackMsg) cloudFeedbackMsg.style.display = 'none';
+
+      // Pre-fill existing config if any
+      const existingConfig = window.CloudDB ? window.CloudDB.getConfig() : null;
+      if (existingConfig && firebaseConfigInput) {
+        firebaseConfigInput.value = JSON.stringify(existingConfig, null, 2);
+      }
+      updateCloudUI();
+    });
+  }
+
+  function closeCloud() {
+    if (cloudModal) {
+      cloudModal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
+  if (closeCloudModal) {
+    closeCloudModal.addEventListener('click', closeCloud);
+  }
+
+  if (cloudModal) {
+    cloudModal.addEventListener('click', (e) => {
+      if (e.target === cloudModal) closeCloud();
+    });
+  }
+
+  // Save Config Button
+  if (saveCloudConfigBtn) {
+    saveCloudConfigBtn.addEventListener('click', async () => {
+      const rawText = firebaseConfigInput.value;
+      try {
+        const configObj = parseConfigInput(rawText);
+        if (!configObj || !configObj.projectId) {
+          throw new Error('कॉन्फिगमध्ये "projectId" सापडले नाही!');
+        }
+
+        saveCloudConfigBtn.disabled = true;
+        saveCloudConfigBtn.textContent = 'कनेक्ट करत आहे...';
+
+        const ok = window.CloudDB.saveConfig(configObj);
+        if (ok) {
+          showCloudFeedback('✓ Firebase यशस्वीरित्या कनेक्ट झाले!', true);
+          updateCloudUI();
+          
+          // Initial fetch & merge from cloud
+          const cloudRecords = await window.CloudDB.fetchAll();
+          if (cloudRecords && cloudRecords.length) {
+            window.AffidavitStore.mergeCloudRecords(cloudRecords);
+            loadData();
+          }
+
+          // Start listening to real-time changes
+          startCloudListener();
+
+          setTimeout(() => {
+            window.showToast('✓ Firebase क्लाउड डेटाबेस कनेक्ट झाला!', 'success');
+            closeCloud();
+          }, 1200);
+        } else {
+          showCloudFeedback('कनेक्शन अयशस्वी! कृपया API Key व Project ID तपासा.', false);
+        }
+      } catch (err) {
+        showCloudFeedback(err.message, false);
+      } finally {
+        saveCloudConfigBtn.disabled = false;
+        saveCloudConfigBtn.textContent = 'कनेक्ट करा व सेव्ह करा';
+      }
+    });
+  }
+
+  // Disconnect Button
+  if (disconnectCloudBtn) {
+    disconnectCloudBtn.addEventListener('click', () => {
+      if (confirm('तुम्हाला Firebase क्लाउड कनेक्शन काढायचे आहे का? (डेटा लोकल स्टोरेजमध्ये सुरक्षित राहील)')) {
+        window.CloudDB.disconnect();
+        if (firebaseConfigInput) firebaseConfigInput.value = '';
+        showCloudFeedback('क्लाउड कनेक्शन डिस्कनेक्ट झाले. आता ॲप लोकल मोडमध्ये आहे.', true);
+        updateCloudUI();
+        window.showToast('क्लाउड डिस्कनेक्ट झाले (लोकल मोड सक्रिय)', 'info');
+      }
+    });
+  }
+
+  // Upload Local Records to Cloud
+  if (uploadLocalBtn) {
+    uploadLocalBtn.addEventListener('click', async () => {
+      try {
+        uploadLocalBtn.disabled = true;
+        uploadLocalBtn.textContent = 'अपलोड करत आहे...';
+        const res = await window.CloudDB.syncLocalToCloud();
+        showCloudFeedback(`✓ एकूण ${res.synced} भाडे पत्रे यशस्वीरित्या Firebase क्लाउडवर सिंक झाली!`, true);
+        window.showToast(`✓ ${res.synced} रेकॉर्ड्स क्लाउडवर सिंक झाले!`, 'success');
+      } catch (err) {
+        showCloudFeedback('सिंक अयशस्वी: ' + err.message, false);
+      } finally {
+        uploadLocalBtn.disabled = false;
+        uploadLocalBtn.textContent = '📤 लोकल डेटा क्लाउडवर सिंक करा';
+      }
+    });
+  }
+
+  function startCloudListener() {
+    if (window.CloudDB && window.CloudDB.isConfigured()) {
+      window.CloudDB.subscribe((cloudRecords) => {
+        if (cloudRecords && cloudRecords.length) {
+          window.AffidavitStore.mergeCloudRecords(cloudRecords);
+          loadData();
+        }
+      });
+    }
+  }
+
   // Close modals on escape key or backdrop click
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closeView();
       closeDelete();
+      closeCloud();
     }
   });
 
-  [viewModal, deleteModal].forEach(modal => {
+  [viewModal, deleteModal, cloudModal].forEach(modal => {
     if (modal) {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
           closeView();
           closeDelete();
+          closeCloud();
         }
       });
     }
@@ -325,6 +533,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 3500);
   };
 
-  // Initial Data Load
+  // Initial Data Load & Cloud Initialization
   loadData();
+  updateCloudUI();
+  if (window.CloudDB && window.CloudDB.isConfigured()) {
+    window.CloudDB.init();
+    updateCloudUI();
+    startCloudListener();
+    // Background pull
+    window.CloudDB.fetchAll().then(cloudRecords => {
+      if (cloudRecords && cloudRecords.length) {
+        window.AffidavitStore.mergeCloudRecords(cloudRecords);
+        loadData();
+      }
+    }).catch(console.warn);
+  }
 });
+

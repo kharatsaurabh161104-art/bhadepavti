@@ -447,6 +447,7 @@ const AffidavitStore = {
   save(data) {
     const list = this.getAll();
     const now = new Date();
+    let savedRecord = null;
 
     if (data.id) {
       // Update existing
@@ -457,20 +458,31 @@ const AffidavitStore = {
           updatedAt: now.toISOString()
         };
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
-        return list[index];
+        savedRecord = list[index];
       }
     }
 
-    // Create new
-    const newRecord = {
-      ...data,
-      id: 'AFF-' + Date.now().toString(36).toUpperCase(),
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
-    };
-    list.unshift(newRecord);
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
-    return newRecord;
+    if (!savedRecord) {
+      // Create new
+      const newRecord = {
+        ...data,
+        id: data.id || ('AFF-' + Date.now().toString(36).toUpperCase()),
+        createdAt: data.createdAt || now.toISOString(),
+        updatedAt: now.toISOString()
+      };
+      list.unshift(newRecord);
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+      savedRecord = newRecord;
+    }
+
+    // Asynchronously sync to Cloud Firebase if configured
+    if (window.CloudDB && typeof window.CloudDB.saveRecord === 'function') {
+      window.CloudDB.saveRecord(savedRecord).catch(err => {
+        console.warn('Background cloud sync error:', err);
+      });
+    }
+
+    return savedRecord;
   },
 
   delete(id) {
@@ -478,7 +490,48 @@ const AffidavitStore = {
     const initialLen = list.length;
     list = list.filter(item => item.id !== id);
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+
+    // Asynchronously delete from Cloud Firebase if configured
+    if (window.CloudDB && typeof window.CloudDB.deleteRecord === 'function') {
+      window.CloudDB.deleteRecord(id).catch(err => {
+        console.warn('Background cloud delete error:', err);
+      });
+    }
+
     return list.length < initialLen;
+  },
+
+  mergeCloudRecords(cloudRecords) {
+    if (!Array.isArray(cloudRecords)) return;
+    const local = this.getAll();
+    const map = new Map();
+
+    // Add local records to map
+    local.forEach(item => {
+      if (item && item.id) map.set(item.id, item);
+    });
+
+    // Merge cloud records (prefer whichever has newer updatedAt)
+    cloudRecords.forEach(cloudItem => {
+      if (!cloudItem || !cloudItem.id) return;
+      const localItem = map.get(cloudItem.id);
+      if (!localItem) {
+        map.set(cloudItem.id, cloudItem);
+      } else {
+        const localTime = new Date(localItem.updatedAt || 0).getTime();
+        const cloudTime = new Date(cloudItem.updatedAt || 0).getTime();
+        if (cloudTime >= localTime) {
+          map.set(cloudItem.id, cloudItem);
+        }
+      }
+    });
+
+    const merged = Array.from(map.values()).sort((a, b) => {
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+    });
+
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(merged));
+    return merged;
   },
 
   seedDemoData() {
