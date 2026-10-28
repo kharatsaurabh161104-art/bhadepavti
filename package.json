@@ -1,12 +1,5 @@
 {
   "name": "onpoint-bhade-pavati",
   "version": "1.0.0",
-  "description": "Onpoint Services Bhade Pavti & Swadhar Student Affidavit Generator",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "pdf-parse": "^2.4.5"
-  }
+  "private": true
 }
