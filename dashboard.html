@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>डॅशबोर्ड — Onpoint Services भाडे पावती जनरेटर</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/print.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar no-print">
+      <div class="sidebar-header">
+        <img src="assets/logo.png" alt="Onpoint Services Logo" class="sidebar-logo">
+        <div class="sidebar-brand-text">
+          <h2>Onpoint Services</h2>
+          <span>भाडे करारनामा</span>
+        </div>
+      </div>
+
+      <div class="sidebar-user">
+        <div class="user-avatar">OS</div>
+        <div class="user-meta">
+          <div class="user-name">@Onpoint_Services</div>
+          <div class="user-role">प्रशासक (Admin)</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link active">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>मुख्य पृष्ठ (Home)</span>
+        </a>
+
+        <a href="create-affidavit.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>नवीन भाडे पत्र (Create New)</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="logoutBtn" class="btn-logout" title="बाहेर पडा">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>लॉगआउट (Logout)</span>
+        </button>
+        <div class="sidebar-copyright">
+          All rights reserved to ePoint Services through SK Tech Services and Solutions @2026
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-wrapper">
+      <!-- TOP NAVBAR -->
+      <header class="top-navbar no-print">
+        <div class="page-title-group">
+          <h1>भाडे चिठ्ठी / भाडे पत्र व्यवस्थापन डॅशबोर्ड</h1>
+          <p>Onpoint Services &mdash; अधिकृत स्वाधार व भाडे करारनामा प्रणाली</p>
+        </div>
+
+        <div class="navbar-actions">
+          <a href="create-affidavit.html" class="btn-accent">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>नवीन भाडे पत्र तयार करा</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- CONTENT BODY -->
+      <main class="content-container no-print">
+        <!-- STATS CARDS -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-info">
+              <p>एकूण जतन केलेली भाडे पत्रे (Total Affidavits)</p>
+              <h3 id="totalAffidavitsCount">0</h3>
+            </div>
+            <div class="stat-icon blue">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <p>चालू महिन्यातील करारनामे (This Month)</p>
+              <h3 id="monthAffidavitsCount">0</h3>
+            </div>
+            <div class="stat-icon amber">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- OLD AFFIDAVITS TABLE CARD -->
+        <div class="table-card">
+          <div class="table-header-bar">
+            <div class="table-header-title">
+              <h2>जतन केलेली जुनी भाडे पत्रे (Old Affidavits)</h2>
+              <p>शोध व तारीख फिल्टर वापरून जलद शोध घ्या किंवा डाउनलोड करा</p>
+            </div>
+
+            <div class="filter-bar">
+              <div class="search-input-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input 
+                  type="text" 
+                  id="searchInput" 
+                  class="form-control" 
+                  placeholder="घरमालक किंवा विद्यार्थ्याचे नाव शोधा..."
+                >
+              </div>
+
+              <div class="date-filter-group">
+                <label for="fromDateInput">दिनांकापासून:</label>
+                <input type="date" id="fromDateInput" class="date-input">
+              </div>
+
+              <div class="date-filter-group">
+                <label for="toDateInput">दिनांकापर्यंत:</label>
+                <input type="date" id="toDateInput" class="date-input">
+              </div>
+
+              <button id="clearFiltersBtn" class="btn-secondary" title="फिल्टर साफ करा">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                <span>रिसेट</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>अ.क्र. (Sr. No.)</th>
+                  <th>दिनांक (Date)</th>
+                  <th>घरमालकाचे नाव (Owner Name)</th>
+                  <th>विद्यार्थी/भाडेकरूचे नाव (Tenant Name)</th>
+                  <th>क्रिया (Action)</th>
+                </tr>
+              </thead>
+              <tbody id="recordsTableBody">
+                <!-- Rows injected via js/dashboard.js -->
+              </tbody>
+            </table>
+
+            <div id="emptyState" class="empty-state" style="display: none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              <h3>कोणतेही भाडे पत्र सापडले नाही</h3>
+              <p>नवीन भाडे पत्र तयार करण्यासाठी खालील बटणावर क्लिक करा.</p>
+              <a href="create-affidavit.html" class="btn-accent">
+                + नवीन भाडे पत्र तयार करा
+              </a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- VIEW MODAL (2-PAGE PREVIEW) -->
+  <div id="viewModal" class="modal-overlay">
+    <div class="modal-card wide">
+      <div class="modal-header">
+        <h3>भाडे पत्र पूर्वावलोकन (Affidavit Preview)</h3>
+        <button id="closeViewModal" class="modal-close-btn" title="बंद करा">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body" style="background:#4b5563; max-height:75vh; overflow-y:auto; padding:24px; display:flex; flex-direction:column; align-items:center; gap:20px;">
+        <div id="modalPage1" class="a4-page page-1"></div>
+        <div id="modalPage2" class="a4-page page-2"></div>
+        <div id="modalPage3" class="a4-page page-3" style="display: none;"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="modalPrintBtn" class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          <span>प्रिंट करा (Print)</span>
+        </button>
+        <button id="modalDownloadPdf" class="btn-primary" style="width: auto;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>PDF डाउनलोड करा</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRMATION MODAL -->
+  <div id="deleteModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="color: #b91c1c;">भाडे पत्र हटवा (Confirm Delete)</h3>
+        <button id="closeDeleteModal" class="modal-close-btn" title="रद्द करा">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p style="font-size: 14.5px; color: #334155; margin-bottom: 10px;">
+          तुम्हाला खात्री आहे का की तुम्ही <strong id="deleteTargetName"></strong> यांचे भाडे पत्र कायमचे हटवू इच्छिता?
+        </p>
+        <p style="font-size: 12.5px; color: #94a3b8;">
+          ही क्रिया पूर्ववत करता येणार नाही.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button id="cancelDeleteBtn" class="btn-secondary">रद्द करा (Cancel)</button>
+        <button id="confirmDeleteBtn" class="btn-primary" style="background: #dc2626; width:auto;">
+          होय, हटवा (Delete)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vendor Scripts -->
+  <script src="js/vendor/jspdf.umd.min.js"></script>
+  <script src="js/vendor/html2canvas.min.js"></script>
+  
+  <!-- App Scripts -->
+  <script src="js/auth.js"></script>
+  <script src="js/affidavit.js"></script>
+  <script src="js/pdf-generator.js"></script>
+  <script src="js/dashboard.js"></script>
+
+  <script>
+    // Logout button handler
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      if (confirm('तुम्हाला खरोखर लॉगआउट करायचे आहे का? (Do you really want to logout?)')) {
+        window.Auth.logout();
+      }
+    });
+  </script>
+</body>
+</html>

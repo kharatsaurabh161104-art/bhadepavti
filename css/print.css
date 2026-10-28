@@ -1,0 +1,709 @@
+/* ==========================================================================
+   ONPOINT SERVICES — BHADE PAVATI PRINT & PDF STYLESHEET
+   Authentic Marathi Legal Two-Page A4 Affidavit Layout
+   Font: Devanagari Aparajita (Strictly Page 1 & Page 2)
+   ========================================================================== */
+
+/* Devanagari Aparajita Local & Web Font Definitions */
+@font-face {
+  font-family: 'Aparajita';
+  src: local('Aparajita'),
+       url('../assets/fonts/aparaj.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aparajita';
+  src: local('Aparajita Bold'),
+       url('../assets/fonts/aparajb.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aparajita';
+  src: local('Aparajita Italic'),
+       url('../assets/fonts/aparaji.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aparajita';
+  src: local('Aparajita Bold Italic'),
+       url('../assets/fonts/aparajbi.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+
+/* Base Print Typography & A4 Sizing */
+:root {
+  --doc-font: 'Aparajita', 'Noto Sans Devanagari', 'Mangal', 'Segoe UI', Arial, sans-serif;
+  --doc-text-color: #000000;
+  --doc-bg-color: #ffffff;
+}
+
+/* Screen Preview Styling for A4 Sheets */
+.a4-page {
+  width: 210mm;
+  min-height: 297mm;
+  height: 297mm;
+  padding: 2.5cm; /* 2.5 cm margin on all sides */
+  background: #ffffff;
+  color: #000000;
+  box-sizing: border-box;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+  font-family: var(--doc-font);
+  font-size: 13.5px;
+  line-height: 1.55;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* ==========================================================================
+   PAGE 1 : भाडे चिठ्ठी/भाडे पत्र करारनामा
+   ========================================================================== */
+.page-1 {
+  page-break-after: always;
+  break-after: page;
+}
+
+.doc-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.doc-main-title {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  margin-bottom: 8px;
+  color: #000;
+}
+
+.doc-circular-refs {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: #111;
+  text-align: left;
+  display: inline-block;
+  margin: 0 auto;
+}
+
+.doc-circular-refs p {
+  margin: 1px 0;
+}
+
+.dashed-separator {
+  width: 100%;
+  border-bottom: 1.5px dashed #000;
+  margin: 8px 0 12px 0;
+}
+
+/* Parties Section */
+.parties-section {
+  margin-bottom: 10px;
+}
+
+.party-block {
+  margin-bottom: 7px;
+}
+
+.party-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.party-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-left: 12px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.party-table td {
+  padding: 1.5px 4px;
+  vertical-align: top;
+}
+
+.party-table td.lbl {
+  width: 45px;
+  font-weight: 600;
+}
+
+.party-table td.col {
+  width: 12px;
+  text-align: center;
+}
+
+.party-table td.val {
+  text-align: left;
+}
+
+/* Body Paragraphs */
+.doc-paragraph {
+  text-align: justify;
+  text-justify: inter-word;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 7px;
+  text-indent: 28px;
+}
+
+.doc-paragraph strong {
+  font-weight: 700;
+}
+
+/* Conditions Section */
+.doc-conditions {
+  margin-top: 4px;
+  margin-bottom: 6px;
+}
+
+.conditions-heading {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  text-indent: 14px;
+}
+
+.conditions-list {
+  padding-left: 28px;
+  margin: 0 0 6px 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.conditions-list li {
+  margin-bottom: 3.5px;
+  text-align: justify;
+}
+
+/* Concluding Declaration */
+.concluding-declaration {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+/* Page 1 Footer — Stacked Vertically */
+.page1-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  font-size: 13px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.page1-footer p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   PAGE 2 : स्वाक्षरी, सोबत सूची, शासन निर्णय & स्वयंघोषणापत्र
+   ========================================================================== */
+.page-2 {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top Signatures (Tightened) */
+.signatures-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.sig-col {
+  width: 45%;
+  text-align: center;
+  font-size: 13px;
+}
+
+.sig-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.sig-space {
+  height: 28px;
+}
+
+.sig-role {
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 2px;
+}
+
+.sig-name {
+  font-size: 12.5px;
+  margin-top: 2px;
+}
+
+/* Supporting Documents (Tightened) */
+.supporting-docs-section {
+  margin-bottom: 12px;
+  font-size: 12.5px;
+}
+
+.docs-heading {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.docs-list {
+  padding-left: 20px;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.docs-list li {
+  margin-bottom: 2px;
+}
+
+/* Government Reference Section (Tightened) */
+.govt-heading-section {
+  text-align: center;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.horizontal-rule {
+  width: 100%;
+  border-bottom: 1.5px solid #000;
+  margin-bottom: 8px;
+}
+
+.govt-ref-number {
+  font-size: 12.5px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prapatra-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.declaration-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* Self Declaration Body + Photo Box (Tightened) */
+.self-decl-container {
+  position: relative;
+  min-height: auto;
+  margin-bottom: 14px;
+}
+
+.photo-box-wrapper {
+  float: right;
+  width: 30mm;
+  margin-left: 14px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.photo-box {
+  width: 30mm;
+  height: 38mm;
+  border: 1.5px solid #000;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.photo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-placeholder {
+  font-size: 10px;
+  color: #666;
+  text-align: center;
+  padding: 4px;
+  line-height: 1.25;
+}
+
+.photo-label {
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 3px;
+}
+
+.decl-body {
+  font-size: 13px;
+  line-height: 1.55;
+  text-align: justify;
+}
+
+.decl-text {
+  margin-bottom: 8px;
+  text-indent: 24px;
+}
+
+/* Page 2 Bottom Fields (No huge gap) */
+.page2-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 13px;
+  margin-top: 20px;
+  padding-bottom: 0;
+  clear: both;
+}
+
+.p2-footer-left {
+  text-align: left;
+}
+
+.p2-footer-left p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.p2-footer-right {
+  text-align: right;
+  min-width: 200px;
+}
+
+.p2-footer-right p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Document Page Number (Right Bottom aligned with 2.5cm margin) */
+.doc-page-number {
+  position: absolute;
+  right: 2.5cm;
+  bottom: 1.2cm;
+  font-family: var(--doc-font);
+  font-size: 13px;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: 0.3px;
+  line-height: 1;
+  z-index: 10;
+}
+
+/* ==========================================================================
+   PAGE 3 : स्वाधार विद्यार्थी प्रतिज्ञापत्र / शपथपत्र
+   ========================================================================== */
+.page-3 {
+  page-break-before: always;
+  break-before: page;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+.swadhar-outer-border,
+.swadhar-document-content {
+  border: none;
+  padding: 0;
+  margin: 0;
+  height: auto;
+  box-sizing: border-box;
+  display: block;
+}
+
+.swadhar-top-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.swadhar-main-title {
+  text-align: center;
+  font-size: 16.5px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  margin-bottom: 8px;
+  color: #000;
+}
+
+.swadhar-to-block {
+  font-size: 13px;
+  line-height: 1.4;
+  margin-bottom: 6px;
+  color: #000;
+  font-weight: 600;
+}
+
+.swadhar-to-block p {
+  margin: 1px 0;
+}
+
+.swadhar-salutation {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 4px 0 3px 0;
+}
+
+.swadhar-body-text {
+  text-align: justify;
+  text-justify: inter-word;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 6px;
+  text-indent: 24px;
+}
+
+.swadhar-clauses {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 6px 8px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.swadhar-clauses li {
+  margin-bottom: 3px;
+}
+
+.swadhar-penal-text {
+  text-align: justify;
+  text-justify: inter-word;
+  font-size: 12.5px;
+  line-height: 1.45;
+  margin: 6px 0 8px 0;
+}
+
+.swadhar-sig-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.swadhar-sig-left p,
+.swadhar-sig-right p {
+  margin: 2px 0;
+  line-height: 1.35;
+}
+
+.swadhar-sig-right {
+  text-align: right;
+}
+
+.swadhar-middle-divider {
+  display: none;
+}
+
+.swadhar-bottom-section {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.swadhar-govt-header {
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.swadhar-rule-with-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 10px 0 6px 0;
+}
+
+.swadhar-rule-with-title .rule-line {
+  flex: 1;
+  height: 1.5px;
+  background-color: #000000;
+}
+
+.swadhar-rule-with-title .govt-ref-number {
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.swadhar-govt-header .govt-ref-number {
+  font-size: 12.5px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.swadhar-govt-header .prapatra-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.swadhar-govt-header .declaration-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.swadhar-decl-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.swadhar-decl-body {
+  flex: 1;
+}
+
+.swadhar-decl-body .decl-text {
+  text-align: justify;
+  text-justify: inter-word;
+  font-size: 12.5px;
+  line-height: 1.5;
+  margin-bottom: 6px;
+  text-indent: 18px;
+}
+
+/* ==========================================================================
+   PRINT MEDIA RULES (For window.print() and PDF generation)
+   ========================================================================== */
+@media print {
+  /* Hide all dashboard chrome, sidebar, buttons */
+  body, html {
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .sidebar,
+  .top-navbar,
+  .editor-action-bar,
+  .form-scroll-pane,
+  .preview-pane-header,
+  .toast-container,
+  .modal-overlay,
+  .no-print {
+    display: none !important;
+  }
+
+  .app-layout {
+    display: block !important;
+  }
+
+  .main-wrapper {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+
+  .content-container {
+    padding: 0 !important;
+  }
+
+  .affidavit-editor-layout {
+    display: block !important;
+  }
+
+  .print-render-container {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: 210mm !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    display: block !important;
+  }
+
+  .preview-pane-sticky {
+    position: static !important;
+  }
+
+  .preview-container-box {
+    background: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+    gap: 0 !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  .a4-page {
+    width: 210mm !important;
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+    padding: 2.5cm !important; /* 2.5 cm margin on all sides */
+    margin: 0 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    background: #ffffff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page-1 {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .page-2 {
+    page-break-before: always !important;
+    break-before: page !important;
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  .page-3 {
+    page-break-before: always !important;
+    break-before: page !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .page-3[style*="display: none"] {
+    display: none !important;
+  }
+
+  .doc-page-number {
+    position: absolute !important;
+    right: 2.5cm !important;
+    bottom: 1.2cm !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #000000 !important;
+    display: block !important;
+  }
+}

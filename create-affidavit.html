@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>भाडे पत्र तयार करा — Onpoint Services</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/print.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar no-print">
+      <div class="sidebar-header">
+        <img src="assets/logo.png" alt="Onpoint Services Logo" class="sidebar-logo">
+        <div class="sidebar-brand-text">
+          <h2>Onpoint Services</h2>
+          <span>भाडे करारनामा</span>
+        </div>
+      </div>
+
+      <div class="sidebar-user">
+        <div class="user-avatar">OS</div>
+        <div class="user-meta">
+          <div class="user-name">@Onpoint_Services</div>
+          <div class="user-role">प्रशासक (Admin)</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>मुख्य पृष्ठ (Home)</span>
+        </a>
+
+        <a href="create-affidavit.html" class="nav-link active">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>नवीन भाडे पत्र (Create New)</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="logoutBtn" class="btn-logout" title="बाहेर पडा">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>लॉगआउट (Logout)</span>
+        </button>
+        <div class="sidebar-copyright">
+          All rights reserved to ePoint Services through SK Tech Services and Solutions @2026
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-wrapper">
+      <!-- TOP NAVBAR -->
+      <header class="top-navbar no-print">
+        <div class="page-title-group">
+          <h1 id="pageTitle">भाडे चिठ्ठी / भाडे पत्र तयार करा</h1>
+          <p>दोन्ही संदर्भ कागदपत्रांनुसार अधिकृत मराठी भाडे करारनामा</p>
+        </div>
+
+        <div class="navbar-actions">
+          <button type="button" id="fillDemoBtn" class="btn-secondary" title="चाचणीसाठी नमुना माहिती भरा">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            <span>डेमो माहिती भरा (Fill Demo)</span>
+          </button>
+          <a href="dashboard.html" class="btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>डॅशबोर्डवर परत जा</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- CONTENT BODY (SPLIT EDITOR & PREVIEW) -->
+      <main class="content-container">
+        <div class="affidavit-editor-layout">
+          
+          <!-- LEFT FORM PANE -->
+          <div class="form-scroll-pane no-print">
+            <form id="affidavitForm" autocomplete="off">
+              <input type="hidden" id="recordId" value="">
+
+              <!-- A. विद्यार्थी / लिहून देणार -->
+              <div class="form-card">
+                <div class="form-card-header">
+                  <div class="form-card-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span>१. विद्यार्थी / लिहून देणार (Tenant / Student)</span>
+                  </div>
+                </div>
+                <div class="form-card-body">
+                  <div class="field">
+                    <label for="tenantName">विद्यार्थ्याचे पूर्ण नाव <span class="req">*</span></label>
+                    <input type="text" id="tenantName" placeholder="उदा. सौरभ अजिनाथ खरात" required>
+                  </div>
+
+                  <div class="grid-2">
+                    <div class="field">
+                      <label for="tenantFatherName">वडिलांचे नाव <span class="req">*</span></label>
+                      <input type="text" id="tenantFatherName" placeholder="उदा. अजिनाथ खरात" required>
+                      <span class="field-help">पान २ वरील स्वयंघोषणापत्रासाठी</span>
+                    </div>
+
+                    <div class="field">
+                      <label for="tenantAge">वय (वर्षे) <span class="req">*</span></label>
+                      <input type="text" id="tenantAge" placeholder="उदा. २१" required>
+                    </div>
+                  </div>
+
+                  <div class="grid-2">
+                    <div class="field">
+                      <label for="tenantOccupation">व्यवसाय <span class="field-hint">(निवडा किंवा टाईप करा)</span></label>
+                      <input type="text" id="tenantOccupation" list="tenantOccupationList" value="शिक्षण / विद्यार्थी" placeholder="उदा. शिक्षण / विद्यार्थी किंवा व्यवसाय">
+                      <datalist id="tenantOccupationList">
+                        <option value="शिक्षण / विद्यार्थी">शिक्षण / विद्यार्थी (Student)</option>
+                        <option value="व्यवसाय">व्यवसाय (Business)</option>
+                        <option value="शिक्षण व व्यवसाय">शिक्षण व व्यवसाय (Student &amp; Business)</option>
+                        <option value="नोकरी">नोकरी (Service / Job)</option>
+                        <option value="खाजगी नोकरी">खाजगी नोकरी (Private Job)</option>
+                        <option value="शेती">शेती (Agriculture)</option>
+                        <option value="इतर">इतर (Other)</option>
+                      </datalist>
+                    </div>
+
+                    <div class="field">
+                      <label for="tenantAadhaar">आधार क्रमांक</label>
+                      <input type="text" id="tenantAadhaar" placeholder="उदा. ७८९० १२३४ ५६७८">
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label for="tenantAddress">कायमचा रहिवासी पत्ता <span class="req">*</span></label>
+                    <textarea id="tenantAddress" rows="2" placeholder="उदा. मु. पो. चकोरे, ता. परांडा, जि. धाराशिव" required></textarea>
+                  </div>
+
+                  <div class="grid-2">
+                    <div class="field">
+                      <label for="tenantCollege">महाविद्यालय / शिक्षण संस्था <span class="req">*</span> <span class="field-hint">(निवडा किंवा टाईप करा)</span></label>
+                      <input type="text" id="tenantCollege" list="collegeList" placeholder="उदा. झील कॉलेज ऑफ इंजिनिअरिंग ॲण्ड रिसर्च, नऱ्हे, पुणे" required>
+                      <datalist id="collegeList">
+                        <option value="झील कॉलेज ऑफ इंजिनिअरिंग ॲण्ड रिसर्च, नऱ्हे, पुणे">Zeal College of Engineering and Research, Narhe, Pune</option>
+                        <option value="Zeal College of Engineering and Research, Narhe, Pune">झील कॉलेज ऑफ इंजिनिअरिंग ॲण्ड रिसर्च, नऱ्हे, पुणे</option>
+                        <option value="झील इन्स्टिट्यूट ऑफ बिझनेस ॲडमिनिस्ट्रेशन, नऱ्हे, पुणे (ZIBACAR)">Zeal MBA &amp; MCA Institute, Narhe, Pune</option>
+                        <option value="झील पॉलिटेक्निक, नऱ्हे, पुणे">Zeal Polytechnic, Narhe, Pune</option>
+                        <option value="सिंहगड कॉलेज ऑफ इंजिनिअरिंग, वडगाव (बु.), पुणे">Sinhgad College of Engineering (SCOE), Pune</option>
+                        <option value="श्रीमती काशिबाई नवले कॉलेज ऑफ इंजिनिअरिंग, वडगाव, पुणे">SKNCOE, Vadgaon, Pune</option>
+                        <option value="जेएसपीएम राजर्षी शाहू कॉलेज ऑफ इंजिनिअरिंग, ताथवडे, पुणे">JSPM RSCOE, Pune</option>
+                        <option value="पुणे इन्स्टिट्यूट ऑफ कॉम्प्युटर टेक्नॉलॉजी (PICT), धनकवडी, पुणे">PICT, Pune</option>
+                        <option value="भारती विद्यापीठ कॉलेज ऑफ इंजिनिअरिंग, कात्रज, पुणे">Bharati Vidyapeeth, Katraj, Pune</option>
+                        <option value="सीओईपी टेक्नॉलॉजिकल युनिव्हर्सिटी, शिवाजीनगर, पुणे">COEP Tech University, Pune</option>
+                        <option value="एमआयटी वर्ल्ड पीस युनिव्हर्सिटी (MIT-WPU), कोथरूड, पुणे">MIT-WPU, Pune</option>
+                        <option value="डी. वाय. पाटील कॉलेज ऑफ इंजिनिअरिंग, आकुर्डी, पुणे">D. Y. Patil College of Engineering, Pune</option>
+                        <option value="विश्वकर्मा इन्स्टिट्यूट ऑफ टेक्नॉलॉजी (VIT), बिबवेवाडी, पुणे">VIT, Bibwewadi, Pune</option>
+                        <option value="पीव्हीजी कॉलेज ऑफ इंजिनिअरिंग, सहकारनगर, पुणे">PVG COET, Pune</option>
+                        <option value="फर्ग्युसन महाविद्यालय, पुणे">Fergusson College, Pune</option>
+                        <option value="सर परशुरामभाऊ महाविद्यालय (SP College), पुणे">S. P. College, Pune</option>
+                        <option value="मॉडर्न कॉलेज, पुणे">Modern College, Pune</option>
+                      </datalist>
+                    </div>
+
+                    <div class="field">
+                      <label for="tenantCourse">अभ्यासक्रम <span class="req">*</span> <span class="field-hint">(निवडा किंवा टाईप करा)</span></label>
+                      <input type="text" id="tenantCourse" list="courseList" placeholder="उदा. B.Tech Robotics and Automation" required>
+                      <datalist id="courseList">
+                        <option value="MBA">MBA (Master of Business Administration)</option>
+                        <option value="MCA">MCA (Master of Computer Applications)</option>
+                        <option value="11th">11th (११ वी)</option>
+                        <option value="12th">12th (१२ वी)</option>
+                        <option value="11th Science">11th Science (११ वी विज्ञान)</option>
+                        <option value="12th Science">12th Science (१२ वी विज्ञान)</option>
+                        <option value="11th Commerce">11th Commerce (११ वी वाणिज्य)</option>
+                        <option value="12th Commerce">12th Commerce (१२ वी वाणिज्य)</option>
+                        <option value="11th Arts">11th Arts (११ वी कला)</option>
+                        <option value="12th Arts">12th Arts (१२ वी कला)</option>
+                        <option value="B.Tech Robotics and Automation">B.Tech - Robotics and Automation (रोबोटिक्स ॲण्ड ऑटोमेशन)</option>
+                        <option value="B.Tech Mechanical Engineering">B.Tech - Mechanical Engineering (मेकॅनिकल)</option>
+                        <option value="B.Tech Computer Engineering">B.Tech - Computer Engineering (कॉम्प्युटर)</option>
+                        <option value="B.Tech Information Technology">B.Tech - Information Technology (आयटी)</option>
+                        <option value="B.Tech Artificial Intelligence and Data Science">B.Tech - AI &amp; Data Science (ए.आय. ॲण्ड डेटा सायन्स)</option>
+                        <option value="B.Tech Civil Engineering">B.Tech - Civil Engineering (सिव्हिल)</option>
+                        <option value="B.Tech Electrical Engineering">B.Tech - Electrical Engineering (इलेक्ट्रिकल)</option>
+                        <option value="B.Tech Electronics and Telecommunication">B.Tech - E&amp;TC (इलेक्ट्रॉनिक्स ॲण्ड टेलिकम्युनिकेशन)</option>
+                        <option value="Diploma Mechanical Engineering">Diploma - Mechanical Engineering (डिप्लोमा मेकॅनिकल)</option>
+                        <option value="Diploma Computer Engineering">Diploma - Computer Engineering (डिप्लोमा कॉम्प्युटर)</option>
+                        <option value="Diploma Civil Engineering">Diploma - Civil Engineering (डिप्लोमा सिव्हिल)</option>
+                        <option value="Diploma Electrical Engineering">Diploma - Electrical Engineering (डिप्लोमा इलेक्ट्रिकल)</option>
+                        <option value="Diploma Electronics and Telecommunication">Diploma - E&amp;TC (डिप्लोमा ई. अँड टी. सी.)</option>
+                        <option value="Diploma Information Technology">Diploma - Information Technology (डिप्लोमा आयटी)</option>
+                        <option value="Diploma Automobile Engineering">Diploma - Automobile Engineering (डिप्लोमा ऑटोमोबाईल)</option>
+                        <option value="B.E. Computer Engineering">B.E. - Computer Engineering</option>
+                        <option value="B.E. Mechanical Engineering">B.E. - Mechanical Engineering</option>
+                        <option value="B.E. Civil Engineering">B.E. - Civil Engineering</option>
+                        <option value="B.E. Electrical Engineering">B.E. - Electrical Engineering</option>
+                        <option value="B.E. Electronics and Telecommunication">B.E. - E&amp;TC</option>
+                        <option value="B.Sc Computer Science">B.Sc - Computer Science (संगणकशास्त्र)</option>
+                        <option value="B.Sc">B.Sc (विज्ञान)</option>
+                        <option value="B.Com">B.Com (वाणिज्य)</option>
+                        <option value="B.A.">B.A. (कला)</option>
+                        <option value="BBA">BBA</option>
+                        <option value="BCA">BCA</option>
+                        <option value="B.Pharmacy">B.Pharmacy (बी. फार्मसी)</option>
+                        <option value="D.Pharmacy">D.Pharmacy (डी. फार्मसी)</option>
+                        <option value="M.Tech">M.Tech (एम. टेक)</option>
+                      </datalist>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- B. घरमालक / लिहून घेणार -->
+              <div class="form-card">
+                <div class="form-card-header">
+                  <div class="form-card-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span>२. घरमालक / लिहून घेणार (Property Owner)</span>
+                  </div>
+                </div>
+                <div class="form-card-body">
+                  <div class="grid-2">
+                    <div class="field">
+                      <label for="ownerName">घरमालकाचे पूर्ण नाव <span class="req">*</span></label>
+                      <input type="text" id="ownerName" placeholder="उदा. सोमनाथ बबनराव सावंत" required>
+                    </div>
+
+                    <div class="field">
+                      <label for="ownerAge">वय (वर्षे) <span class="req">*</span></label>
+                      <input type="text" id="ownerAge" placeholder="उदा. ४८" required>
+                    </div>
+                  </div>
+
+                  <div class="grid-2">
+                    <div class="field">
+                      <label for="ownerOccupation">व्यवसाय <span class="field-hint">(निवडा किंवा टाईप करा)</span></label>
+                      <input type="text" id="ownerOccupation" list="ownerOccupationList" placeholder="उदा. व्यवसाय / नोकरी">
+                      <datalist id="ownerOccupationList">
+                        <option value="व्यवसाय">व्यवसाय (Business)</option>
+                        <option value="नोकरी">नोकरी (Service / Job)</option>
+                        <option value="शेती">शेती (Agriculture)</option>
+                        <option value="निवृत्त">निवृत्त (Retired)</option>
+                        <option value="खाजगी नोकरी">खाजगी नोकरी (Private Job)</option>
+                        <option value="घरकाम">घरकाम / गृहिणी (Homemaker)</option>
+                        <option value="इतर">इतर (Other)</option>
+                      </datalist>
+                    </div>
+
+                    <div class="field">
+                      <label for="ownerMobile">मोबाईल क्रमांक <span class="req">*</span></label>
+                      <input type="text" id="ownerMobile" placeholder="उदा. ९८२२३३४४५५" required>
+                      <span class="field-help">पान २ वरील सोबत सूचीमध्ये दिसेल</span>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label for="ownerAddress">घरमालकाचा पत्ता <span class="req">*</span></label>
+                    <textarea id="ownerAddress" rows="2" placeholder="उदा. फ्लॅट नं. ४०२, समर्थ रेसिडेन्सी, नऱ्हे, पुणे - ४११०४१" required></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- C. मिळकत व भाडे तपशील -->
+              <div class="form-card">
+                <div class="form-card-header">
+                  <div class="form-card-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
+                    <span>३. मिळकत व भाडे तपशील (Property &amp; Tenancy)</span>
+                  </div>
+                </div>
+                <div class="form-card-body">
+                  <div class="grid-2">
+                    <div class="field">
+                      <label for="academicYear">शैक्षणिक वर्ष <span class="req">*</span></label>
+                      <input type="text" id="academicYear" placeholder="२०२६-२०२७" value="२०२६-२०२७" required>
+                    </div>
+
+                    <div class="field">
+                      <label for="propertyCity">गाव / शहर / परिसर <span class="req">*</span></label>
+                      <input type="text" id="propertyCity" placeholder="पुणे" value="पुणे" required>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label for="propertyAddress">मिळकतीचा पत्ता <span class="req">*</span></label>
+                    <input type="text" id="propertyAddress" placeholder="उदा. फ्लॅट नं. ४०२, समर्थ रेसिडेन्सी, नऱ्हे" required>
+                  </div>
+
+                  <div class="grid-3">
+                    <div class="field">
+                      <label for="surveyNo">सर्व्हे क्र. / प्लॉट क्र.</label>
+                      <input type="text" id="surveyNo" placeholder="उदा. ४५/२">
+                    </div>
+
+                    <div class="field">
+                      <label for="roomNo">घर क्र. / खोली क्र. / फ्लॅट क्र.</label>
+                      <input type="text" id="roomNo" placeholder="उदा. ४०२">
+                    </div>
+
+                    <div class="field">
+                      <label for="propertyArea">क्षेत्रफळ व युनिट</label>
+                      <input type="text" id="propertyArea" placeholder="उदा. ५५० चौ. फूट">
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label for="propertyConstruction">बांधकाम स्थिती</label>
+                    <input type="text" id="propertyConstruction" placeholder="उदा. आर.सी.सी. बांधकाम" value="आर.सी.सी. बांधकाम">
+                  </div>
+
+                  <div class="grid-2">
+                    <div class="field">
+                      <label for="monthlyRent">दरमहा भाडे रक्कम (अंकी रु.) <span class="req">*</span></label>
+                      <input type="number" id="monthlyRent" placeholder="उदा. ३५००" required>
+                    </div>
+
+                    <div class="field">
+                      <label for="rentPaymentDay">भाडे भरण्याची तारीख</label>
+                      <input type="text" id="rentPaymentDay" placeholder="दरमहा १०" value="१०">
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label for="rentInWords">भाडे रक्कम अक्षरी (मराठीत) <span class="req">*</span></label>
+                    <input type="text" id="rentInWords" placeholder="उदा. तीन हजार पाचशे" required>
+                    <span class="field-help">अंकी रक्कम टाकल्यावर आपोआप मराठीत रूपांतरित होते</span>
+                  </div>
+
+                  <div class="grid-3">
+                    <div class="field">
+                      <label for="rentStartDate">भाडे कालावधी सुरुवात <span class="req">*</span></label>
+                      <input type="date" id="rentStartDate" required>
+                    </div>
+
+                    <div class="field">
+                      <label for="rentEndDate">भाडे कालावधी समाप्ती <span class="req">*</span></label>
+                      <input type="date" id="rentEndDate" required>
+                    </div>
+
+                    <div class="field">
+                      <label for="rentDurationMonths">एकूण कालावधी</label>
+                      <input type="text" id="rentDurationMonths" placeholder="उदा. ११ महिने" value="११ महिने">
+                    </div>
+                  </div>
+
+                  <div class="grid-2">
+                    <div class="field">
+                      <label for="agreementDate">करारनामा दिनांक <span class="req">*</span></label>
+                      <input type="date" id="agreementDate" required>
+                    </div>
+
+                    <div class="field">
+                      <label for="executionPlace">करारनामा स्थळ <span class="req">*</span></label>
+                      <input type="text" id="executionPlace" placeholder="उदा. पुणे" value="पुणे" required>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- D. सोबत कागदपत्रे व अर्जदाराचा फोटो -->
+              <div class="form-card">
+                <div class="form-card-header">
+                  <div class="form-card-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <span>४. सोबत कागदपत्रे व फोटो (Supporting Docs &amp; Photo)</span>
+                  </div>
+                </div>
+                <div class="form-card-body">
+                  <div class="photo-upload-zone">
+                    <div class="photo-preview-thumb" id="photoPreviewBox">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg>
+                    </div>
+
+                    <div class="photo-upload-btn-wrap">
+                      <label class="btn-secondary" style="cursor:pointer; display:inline-flex;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                          <polyline points="17 8 12 3 7 8"></polyline>
+                          <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span>विद्यार्थ्याचा फोटो अपलोड करा</span>
+                        <input type="file" id="applicantPhotoInput" class="file-input-hidden" accept="image/*">
+                      </label>
+                      <button type="button" id="removePhotoBtn" class="btn-secondary" style="display:none; color:#ef4444; border-color:#fca5a5; margin-left:8px;">फोटो काढा</button>
+                      <p class="field-help" style="margin-top:6px;">पान २ वरील 'अर्जदाराचा फोटो' बॉक्समध्ये दर्शवला जाईल (JPG, PNG)</p>
+                    </div>
+                  </div>
+
+                  <div style="background:#f8fafc; padding:14px 16px; border-radius:8px; border:1px solid #e2e8f0;">
+                    <p style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:8px;">सोबत जोडलेली कागदपत्रे सूची (पान २):</p>
+                    <ul style="font-size:12.5px; color:#475569; padding-left:20px; line-height:1.6;">
+                      <li>१. घरमालकाचे लाईट बिलाची छायांकित प्रत.</li>
+                      <li>२. घरमालकाचे आधार कार्डची छायांकित प्रत,</li>
+                      <li>३. घरमालकाचे मोबाईल क्रमांक (वरील माहितीनुसार आपोआप जोडला जाईल)</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ५. स्वाधार विद्यार्थी प्रतिज्ञापत्र पर्याय (Swadhar Student Affidavit Option) -->
+              <div class="form-card swadhar-option-card">
+                <div class="swadhar-checkbox-wrapper">
+                  <label class="custom-checkbox-label" for="includeSwadhar">
+                    <input type="checkbox" id="includeSwadhar" name="includeSwadhar" class="custom-checkbox-input">
+                    <div class="checkbox-text-content">
+                      <div class="checkbox-main-title">
+                        <strong>SWADHAR STUDENT AFFIDAVIT ? (स्वाधार विद्यार्थी प्रतिज्ञापत्र / शपथपत्र हवे आहे का?)</strong>
+                      </div>
+                      <p class="checkbox-sub-desc">
+                        सदर पर्याय निवडल्यास (If checked), वरील भरलेल्या माहितीवर आधारित मा. सहायक संचालक, इतर मागास बहुजन कल्याण, पुणे यांच्या नावे अधिकृत स्वाधार प्रतिज्ञापत्र / शपथपत्र व प्रपत्र-अ स्वयंघोषणापत्र जनरेट होईल.
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- ACTION BAR (SAVE & DOWNLOAD) -->
+              <div class="editor-action-bar">
+                <button type="submit" class="btn-primary" id="saveRecordBtn" style="width: auto;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                  </svg>
+                  <span>माहिती जतन करा (Save Record)</span>
+                </button>
+
+                <div style="display: flex; gap: 10px;">
+                  <button type="button" id="printBtn" class="btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                      <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    <span>प्रिंट करा</span>
+                  </button>
+
+                  <button type="button" id="downloadPdfBtn" class="btn-accent">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>PDF डाउनलोड करा</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- DOCUMENT RENDER CONTAINER (FOR PDF GENERATOR & PRINT) -->
+          <div id="printContainer" class="print-render-container">
+            <div id="previewPage1" class="a4-page page-1">
+              <!-- Injected via JS -->
+            </div>
+            <div id="previewPage2" class="a4-page page-2">
+              <!-- Injected via JS -->
+            </div>
+            <div id="previewPage3" class="a4-page page-3" style="display: none;">
+              <!-- Injected via JS if includeSwadhar is checked -->
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Vendor Scripts -->
+  <script src="js/vendor/jspdf.umd.min.js"></script>
+  <script src="js/vendor/html2canvas.min.js"></script>
+
+  <!-- App Scripts -->
+  <script src="js/auth.js"></script>
+  <script src="js/affidavit.js"></script>
+  <script src="js/pdf-generator.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Guard route
+      if (window.Auth) {
+        window.Auth.protectRoute();
+      }
+
+      // DOM Elements
+      const form = document.getElementById('affidavitForm');
+      const recordIdInput = document.getElementById('recordId');
+      const pageTitle = document.getElementById('pageTitle');
+      const monthlyRentInput = document.getElementById('monthlyRent');
+      const rentInWordsInput = document.getElementById('rentInWords');
+      const rentStartDateInput = document.getElementById('rentStartDate');
+      const rentEndDateInput = document.getElementById('rentEndDate');
+      const rentDurationMonthsInput = document.getElementById('rentDurationMonths');
+      const agreementDateInput = document.getElementById('agreementDate');
+      const photoInput = document.getElementById('applicantPhotoInput');
+      const photoPreviewBox = document.getElementById('photoPreviewBox');
+      const removePhotoBtn = document.getElementById('removePhotoBtn');
+      const includeSwadharInput = document.getElementById('includeSwadhar');
+      const fillDemoBtn = document.getElementById('fillDemoBtn');
+      const printBtn = document.getElementById('printBtn');
+      const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+
+      let applicantPhotoBase64 = '';
+
+      // Accurate 11-month Maharashtra rent agreement calculation helper
+      function calculate11MonthsEndDate(startDateStr) {
+        if (!startDateStr) return '';
+        const parts = startDateStr.split('-');
+        if (parts.length !== 3) return '';
+        const y = parseInt(parts[0], 10);
+        const m = parseInt(parts[1], 10);
+        const d = parseInt(parts[2], 10);
+        if (isNaN(y) || isNaN(m) || isNaN(d)) return '';
+        const totalMonths = m - 1 + 11;
+        const targetYear = y + Math.floor(totalMonths / 12);
+        const targetMonth = (totalMonths % 12);
+        const maxDaysInTargetMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+        const clampedDay = Math.min(d, maxDaysInTargetMonth);
+        const end = new Date(targetYear, targetMonth, clampedDay);
+        end.setDate(end.getDate() - 1);
+        const resY = end.getFullYear();
+        const resM = String(end.getMonth() + 1).padStart(2, '0');
+        const resD = String(end.getDate()).padStart(2, '0');
+        return `${resY}-${resM}-${resD}`;
+      }
+
+      // Default dates to today & auto calculate 11 months
+      const today = new Date().toISOString().slice(0, 10);
+      agreementDateInput.value = today;
+      rentStartDateInput.value = today;
+      rentEndDateInput.value = calculate11MonthsEndDate(today);
+      rentDurationMonthsInput.value = '११ महिने';
+
+      // Check URL parameters for edit mode
+      const urlParams = new URLSearchParams(window.location.search);
+      const editId = urlParams.get('id');
+
+      if (editId) {
+        const existing = window.AffidavitStore.getById(editId);
+        if (existing) {
+          pageTitle.textContent = `भाडे पत्र संपादित करा (${existing.tenantName})`;
+          recordIdInput.value = existing.id;
+          populateForm(existing);
+        }
+      }
+
+      // Fill Demo Button
+      fillDemoBtn.addEventListener('click', () => {
+        const demoData = {
+          tenantName: 'सौरभ अजिनाथ खरात',
+          tenantFatherName: 'अजिनाथ खरात',
+          tenantAge: '२१',
+          tenantOccupation: 'विद्यार्थी / शिक्षण',
+          tenantAadhaar: '७८९० १२३४ ५६७८',
+          tenantAddress: 'मु. पो. चकोरे, ता. परांडा, जि. धाराशिव',
+          tenantCollege: 'झील कॉलेज ऑफ इंजिनिअरिंग ॲण्ड रिसर्च, नऱ्हे, पुणे',
+          tenantCourse: 'बी.टेक (रोबोटिक्स ॲण्ड ऑटोमेशन)',
+          ownerName: 'सोमनाथ बबनराव सावंत',
+          ownerAge: '४८',
+          ownerOccupation: 'व्यवसाय',
+          ownerMobile: '९८२२३३४४५५',
+          ownerAddress: 'फ्लॅट नं. ४०२, समर्थ रेसिडेन्सी, नऱ्हे, पुणे - ४११०४१',
+          academicYear: '२०२६-२०२७',
+          propertyAddress: 'फ्लॅट नं. ४०२, समर्थ रेसिडेन्सी, नऱ्हे',
+          propertyCity: 'पुणे',
+          surveyNo: '४५/२',
+          roomNo: '४०२',
+          propertyArea: '५५० चौ. फूट',
+          propertyConstruction: 'आर.सी.सी. बांधकाम',
+          monthlyRent: '३५००',
+          rentInWords: 'तीन हजार पाचशे',
+          rentPaymentDay: '१०',
+          rentStartDate: '2026-07-01',
+          rentEndDate: '2027-05-31',
+          rentDurationMonths: '११ महिने',
+          agreementDate: today,
+          executionPlace: 'पुणे',
+          includeSwadhar: true
+        };
+        populateForm(demoData);
+        updateLivePreview();
+        showToast('✓ डेमो माहिती यशस्वीरित्या भरली गेली!', 'info');
+      });
+
+      function populateForm(data) {
+        Object.keys(data).forEach(key => {
+          const el = document.getElementById(key);
+          if (el) {
+            el.value = data[key];
+          }
+        });
+
+        if (includeSwadharInput) {
+          includeSwadharInput.checked = !!data.includeSwadhar;
+        }
+
+        if (data.applicantPhoto) {
+          applicantPhotoBase64 = data.applicantPhoto;
+          photoPreviewBox.innerHTML = `<img src="${applicantPhotoBase64}" alt="Applicant Photo" style="width:100%;height:100%;object-fit:cover;">`;
+          removePhotoBtn.style.display = 'inline-flex';
+        }
+        updateLivePreview();
+      }
+
+      // Auto convert rent figures to Marathi words
+      monthlyRentInput.addEventListener('input', () => {
+        const val = monthlyRentInput.value.trim();
+        if (val) {
+          const words = window.MarathiNumberWords.convert(val);
+          if (words) {
+            rentInWordsInput.value = words;
+          }
+        }
+        updateLivePreview();
+      });
+
+      // Automatic calculation of rent end date to 11 months when start date is inputted or changed
+      function autoCalculate11Months() {
+        const startVal = rentStartDateInput.value;
+        if (startVal && startVal.length === 10) {
+          const calculatedEnd = calculate11MonthsEndDate(startVal);
+          if (calculatedEnd) {
+            rentEndDateInput.value = calculatedEnd;
+            rentDurationMonthsInput.value = '११ महिने';
+          }
+        }
+        updateLivePreview();
+      }
+
+      rentStartDateInput.addEventListener('input', autoCalculate11Months);
+      rentStartDateInput.addEventListener('change', autoCalculate11Months);
+
+      // Manual end date adjust updates duration
+      rentEndDateInput.addEventListener('change', () => {
+        const start = rentStartDateInput.value;
+        const end = rentEndDateInput.value;
+        if (start && end) {
+          const d1 = new Date(start);
+          const d2 = new Date(end);
+          let months = (d2.getFullYear() - d1.getFullYear()) * 12 + (d2.getMonth() - d1.getMonth());
+          if (months > 0) {
+            rentDurationMonthsInput.value = `${months} महिने`;
+          }
+        }
+        updateLivePreview();
+      });
+
+      // Photo upload
+      photoInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+          alert('कृपया वैध प्रतिमा (Image file) निवडा!');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          applicantPhotoBase64 = event.target.result;
+          photoPreviewBox.innerHTML = `<img src="${applicantPhotoBase64}" alt="Applicant Photo" style="width:100%;height:100%;object-fit:cover;">`;
+          removePhotoBtn.style.display = 'inline-flex';
+          updateLivePreview();
+        };
+        reader.readAsDataURL(file);
+      });
+
+      removePhotoBtn.addEventListener('click', () => {
+        applicantPhotoBase64 = '';
+        photoInput.value = '';
+        photoPreviewBox.innerHTML = `
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        `;
+        removePhotoBtn.style.display = 'none';
+        updateLivePreview();
+      });
+
+      // Collect data object from form
+      function getFormData() {
+        const formData = {
+          id: recordIdInput.value || null,
+          tenantName: document.getElementById('tenantName').value.trim(),
+          tenantFatherName: document.getElementById('tenantFatherName').value.trim(),
+          tenantAge: document.getElementById('tenantAge').value.trim(),
+          tenantOccupation: document.getElementById('tenantOccupation').value.trim(),
+          tenantAadhaar: document.getElementById('tenantAadhaar').value.trim(),
+          tenantAddress: document.getElementById('tenantAddress').value.trim(),
+          tenantCollege: document.getElementById('tenantCollege').value.trim(),
+          tenantCourse: document.getElementById('tenantCourse').value.trim(),
+
+          ownerName: document.getElementById('ownerName').value.trim(),
+          ownerAge: document.getElementById('ownerAge').value.trim(),
+          ownerOccupation: document.getElementById('ownerOccupation').value.trim(),
+          ownerMobile: document.getElementById('ownerMobile').value.trim(),
+          ownerAddress: document.getElementById('ownerAddress').value.trim(),
+
+          academicYear: document.getElementById('academicYear').value.trim(),
+          propertyCity: document.getElementById('propertyCity').value.trim(),
+          propertyAddress: document.getElementById('propertyAddress').value.trim(),
+          surveyNo: document.getElementById('surveyNo').value.trim(),
+          roomNo: document.getElementById('roomNo').value.trim(),
+          propertyArea: document.getElementById('propertyArea').value.trim(),
+          propertyConstruction: document.getElementById('propertyConstruction').value.trim(),
+          monthlyRent: document.getElementById('monthlyRent').value.trim(),
+          rentPaymentDay: document.getElementById('rentPaymentDay').value.trim(),
+          rentInWords: document.getElementById('rentInWords').value.trim(),
+          rentStartDate: document.getElementById('rentStartDate').value,
+          rentEndDate: document.getElementById('rentEndDate').value,
+          rentDurationMonths: document.getElementById('rentDurationMonths').value.trim(),
+          agreementDate: document.getElementById('agreementDate').value,
+          executionPlace: document.getElementById('executionPlace').value.trim(),
+
+          includeSwadhar: includeSwadharInput ? includeSwadharInput.checked : false,
+          applicantPhoto: applicantPhotoBase64
+        };
+        return formData;
+      }
+
+      // Update Live Preview (Pages 1 & 2, and optional Page 3 for Swadhar)
+      function updateLivePreview() {
+        const data = getFormData();
+        const p1 = document.getElementById('previewPage1');
+        const p2 = document.getElementById('previewPage2');
+        const p3 = document.getElementById('previewPage3');
+        if (p1 && p2) {
+          p1.innerHTML = window.AffidavitTemplate.renderPage1(data);
+          p2.innerHTML = window.AffidavitTemplate.renderPage2(data);
+        }
+        if (p3) {
+          if (data.includeSwadhar) {
+            p3.innerHTML = window.AffidavitTemplate.renderPage3(data);
+            p3.style.display = 'flex';
+          } else {
+            p3.innerHTML = '';
+            p3.style.display = 'none';
+          }
+        }
+      }
+
+      // Attach live preview updates to all inputs
+      form.querySelectorAll('input, select, textarea').forEach(input => {
+        input.addEventListener('input', updateLivePreview);
+        input.addEventListener('change', updateLivePreview);
+      });
+
+      if (includeSwadharInput) {
+        includeSwadharInput.addEventListener('change', updateLivePreview);
+      }
+
+      // Save Record
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const data = getFormData();
+        const saved = window.AffidavitStore.save(data);
+        if (saved) {
+          recordIdInput.value = saved.id;
+          pageTitle.textContent = `भाडे पत्र संपादित करा (${saved.tenantName})`;
+          showToast('✓ भाडे करारनामा यशस्वीरित्या जतन केला! (Record Saved)', 'success');
+        }
+      });
+
+      // Print Button
+      printBtn.addEventListener('click', () => {
+        window.print();
+      });
+
+      // Download PDF Button
+      downloadPdfBtn.addEventListener('click', async () => {
+        const data = getFormData();
+        const safeName = (data.tenantName || 'Affidavit').replace(/[^a-zA-Z0-9_\u0900-\u097F]/g, '_');
+        const p1 = document.getElementById('previewPage1');
+        const p2 = document.getElementById('previewPage2');
+        const p3 = document.getElementById('previewPage3');
+        await window.PDFGenerator.generatePDF(
+          `Bhade_Chitthi_${safeName}.pdf`,
+          p1,
+          p2,
+          data.includeSwadhar ? p3 : null
+        );
+      });
+
+      // Logout
+      logoutBtn.addEventListener('click', () => {
+        if (confirm('तुम्हाला खरोखर लॉगआउट करायचे आहे का? (Do you really want to logout?)')) {
+          window.Auth.logout();
+        }
+      });
+
+      // Initial Live Preview
+      updateLivePreview();
+
+      // Toast helper
+      window.showToast = function(msg, type = 'info') {
+        let container = document.getElementById('toastContainer');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'toastContainer';
+          container.className = 'toast-container';
+          document.body.appendChild(container);
+        }
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = msg;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transition = 'opacity 0.3s ease';
+          setTimeout(() => toast.remove(), 300);
+        }, 3500);
+      };
+    });
+  </script>
+</body>
+</html>
