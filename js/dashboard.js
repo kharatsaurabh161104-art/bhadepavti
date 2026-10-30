@@ -60,20 +60,17 @@ document.addEventListener('DOMContentLoaded', () => {
     applyFilters();
     updateStats();
 
-    // Fetch latest from SQLite Database Server
-    if (window.AffidavitStore && typeof window.AffidavitStore.fetchAll === 'function') {
+    // Fetch from Firebase Cloud if configured
+    if (window.CloudDB && window.CloudDB.isConfigured()) {
       try {
-        const fresh = await window.AffidavitStore.fetchAll();
-        if (Array.isArray(fresh)) {
-          allRecords = fresh;
+        const cloudRecords = await window.CloudDB.fetchAll();
+        if (cloudRecords && cloudRecords.length) {
+          allRecords = window.AffidavitStore.mergeCloudRecords(cloudRecords);
           applyFilters();
           updateStats();
-          if (typeof updateDbUI === 'function') {
-            updateDbUI();
-          }
         }
-      } catch (err) {
-        console.warn('Backend database sync notice:', err);
+      } catch (e) {
+        console.warn('Cloud sync background error:', e);
       }
     }
   }
@@ -323,171 +320,63 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================================================
-  // SQLITE DATABASE MANAGEMENT CONTROLLER
+  // BACKUP & RESTORE JSON CONTROLLER
   // ==========================================================================
-  const dbManageBtn = document.getElementById('dbManageBtn');
-  const dbModal = document.getElementById('dbModal');
-  const closeDbModal = document.getElementById('closeDbModal');
-  const closeDbModalBtn = document.getElementById('closeDbModalBtn');
-  const dbStatusDot = document.getElementById('dbStatusDot');
-  const dbStatusText = document.getElementById('dbStatusText');
-  const dbStatusBanner = document.getElementById('dbStatusBanner');
-  const dbBannerDot = document.getElementById('dbBannerDot');
-  const dbBannerTitle = document.getElementById('dbBannerTitle');
-  const dbBannerDesc = document.getElementById('dbBannerDesc');
-  const dbTotalRecordsVal = document.getElementById('dbTotalRecordsVal');
-  const dbMonthRecordsVal = document.getElementById('dbMonthRecordsVal');
-  const dbUsersVal = document.getElementById('dbUsersVal');
-  const dbEngineVal = document.getElementById('dbEngineVal');
-  const downloadDbBackupBtn = document.getElementById('downloadDbBackupBtn');
-  const refreshDbBtn = document.getElementById('refreshDbBtn');
-  const restoreDbBtn = document.getElementById('restoreDbBtn');
-  const dbRestoreFileInput = document.getElementById('dbRestoreFileInput');
-  const dbFeedbackMsg = document.getElementById('dbFeedbackMsg');
+  const backupJsonBtn = document.getElementById('backupJsonBtn');
+  const restoreJsonBtn = document.getElementById('restoreJsonBtn');
+  const restoreJsonInput = document.getElementById('restoreJsonInput');
 
-  function updateDbUI() {
-    const isConn = window.AppDB && window.AppDB.isServerConnected;
-    const stats = window.AppDB ? window.AppDB.cachedStats : null;
-    const engine = (window.AppDB && window.AppDB.serverEngine) || 'sqlite';
-
-    // Navbar Badge
-    if (dbStatusDot && dbStatusText) {
-      if (isConn) {
-        dbStatusDot.className = 'status-dot dot-online';
-        dbStatusText.textContent = `${engine.toUpperCase()} डेटाबेस`;
-      } else {
-        dbStatusDot.className = 'status-dot dot-offline';
-        dbStatusText.textContent = 'लोकल मोड (Offline)';
-      }
-    }
-
-    // Modal Status Banner
-    if (dbStatusBanner) {
-      if (isConn) {
-        dbStatusBanner.className = 'cloud-status-banner banner-connected';
-        if (dbBannerDot) dbBannerDot.className = 'status-dot dot-online';
-        if (dbBannerTitle) dbBannerTitle.textContent = `${engine.toUpperCase()} डेटाबेस सक्रिय (Active & Connected)`;
-        if (dbBannerDesc) {
-          dbBannerDesc.innerHTML = `सर्व डेटाबेस रेकॉर्ड्स <code>data/bhadepavti.db</code> मध्ये कायमस्वरूपी सुरक्षित आहेत. तुम्ही कधीही एडिट किंवा पीडीएफ डाउनलोड करू शकता.`;
-        }
-      } else {
-        dbStatusBanner.className = 'cloud-status-banner banner-local';
-        if (dbBannerDot) dbBannerDot.className = 'status-dot dot-offline';
-        if (dbBannerTitle) dbBannerTitle.textContent = 'लोकल ब्राऊझर मोड (Local Cache Mode)';
-        if (dbBannerDesc) {
-          dbBannerDesc.textContent = 'डेटा सध्या ब्राऊझर लोकल स्टोरेजमध्ये सुरक्षित आहे. सर्व्हर सुरू केल्यास (node server.js) ऑटोमॅटिक सिंक होईल.';
-        }
-      }
-    }
-
-    // Modal Stats Numbers
-    if (dbTotalRecordsVal) dbTotalRecordsVal.textContent = allRecords.length;
-    if (dbMonthRecordsVal && monthCountEl) dbMonthRecordsVal.textContent = monthCountEl.textContent;
-    if (dbUsersVal) dbUsersVal.textContent = (stats && stats.totalUsers) ? stats.totalUsers : '१';
-    if (dbEngineVal) dbEngineVal.textContent = isConn ? engine.toUpperCase() : 'लोकल';
-  }
-
-  function showDbFeedback(msg, isSuccess = true) {
-    if (!dbFeedbackMsg) return;
-    dbFeedbackMsg.style.display = 'block';
-    dbFeedbackMsg.style.background = isSuccess ? '#ecfdf5' : '#fef2f2';
-    dbFeedbackMsg.style.color = isSuccess ? '#065f46' : '#b91c1c';
-    dbFeedbackMsg.style.border = isSuccess ? '1px solid #a7f3d0' : '1px solid #fecaca';
-    dbFeedbackMsg.textContent = msg;
-  }
-
-  function openDbModal() {
-    if (dbModal) {
-      dbModal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      if (dbFeedbackMsg) dbFeedbackMsg.style.display = 'none';
-      if (window.AppDB) {
-        window.AppDB.checkConnection().then(() => updateDbUI());
-      } else {
-        updateDbUI();
-      }
-    }
-  }
-
-  function closeDbModalFn() {
-    if (dbModal) {
-      dbModal.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  }
-
-  if (dbManageBtn) dbManageBtn.addEventListener('click', openDbModal);
-  if (closeDbModal) closeDbModal.addEventListener('click', closeDbModalFn);
-  if (closeDbModalBtn) closeDbModalBtn.addEventListener('click', closeDbModalFn);
-
-  // Backup Download Button
-  if (downloadDbBackupBtn) {
-    downloadDbBackupBtn.addEventListener('click', async () => {
-      try {
-        if (window.AppDB) {
-          await window.AppDB.exportBackup();
-          showDbFeedback('✓ डेटाबेस बॅकअप यशस्वीरित्या डाउनलोड झाला!', true);
-          window.showToast('✓ डेटाबेस बॅकअप डाऊनलोड झाला!', 'success');
-        }
-      } catch (err) {
-        showDbFeedback('बॅकअप डाऊनलोड त्रुटी: ' + err.message, false);
-      }
+  if (backupJsonBtn) {
+    backupJsonBtn.addEventListener('click', () => {
+      const records = window.AffidavitStore.getAll();
+      const backupData = {
+        version: '1.0',
+        exportedAt: new Date().toISOString(),
+        totalRecords: records.length,
+        affidavits: records
+      };
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `bhadepavti_backup_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      window.showToast('✓ डेटा बॅकअप डाऊनलोड झाला!', 'success');
     });
   }
 
-  // Refresh DB Button
-  if (refreshDbBtn) {
-    refreshDbBtn.addEventListener('click', async () => {
-      try {
-        refreshDbBtn.disabled = true;
-        refreshDbBtn.textContent = 'लोड करत आहे...';
-        await loadData();
-        showDbFeedback('✓ डेटाबेसमधून सर्व रेकॉर्ड्स रिफ्रेश झाले!', true);
-        window.showToast('✓ डेटाबेस री-सिंक झाला!', 'success');
-      } catch (err) {
-        showDbFeedback('री-सिंक त्रुटी: ' + err.message, false);
-      } finally {
-        refreshDbBtn.disabled = false;
-        refreshDbBtn.textContent = 'री-सिंक करा';
-      }
-    });
-  }
-
-  // Restore DB File
-  if (restoreDbBtn && dbRestoreFileInput) {
-    restoreDbBtn.addEventListener('click', () => {
-      dbRestoreFileInput.value = '';
-      dbRestoreFileInput.click();
+  if (restoreJsonBtn && restoreJsonInput) {
+    restoreJsonBtn.addEventListener('click', () => {
+      restoreJsonInput.value = '';
+      restoreJsonInput.click();
     });
 
-    dbRestoreFileInput.addEventListener('change', async (e) => {
+    restoreJsonInput.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
-
       try {
-        restoreDbBtn.disabled = true;
-        restoreDbBtn.textContent = 'इम्पोर्ट करत आहे...';
         const text = await file.text();
         const json = JSON.parse(text);
-
-        if (window.AppDB) {
-          const res = await window.AppDB.importBackup(json);
-          showDbFeedback(`✓ यशस्वी! एकूण ${res.importedCount || 'सर्व'} भाडे करारनामे डेटाबेसमध्ये रिस्टोअर झाले.`, true);
-          window.showToast(`✓ ${res.importedCount || 'सर्व'} रेकॉर्ड्स रिस्टोअर झाले!`, 'success');
-          await loadData();
+        if (!json || !Array.isArray(json.affidavits)) {
+          alert('अवैध बॅकअप फाईल! ("affidavits" array आवश्यक आहे)');
+          return;
         }
+        let count = 0;
+        json.affidavits.forEach(rec => {
+          if (rec && rec.id) {
+            window.AffidavitStore.save(rec);
+            count++;
+          }
+        });
+        window.showToast(`✓ ${count} भाडे पत्रे यशस्वीरित्या रिस्टोअर झाली!`, 'success');
+        loadData();
       } catch (err) {
-        showDbFeedback('रिस्टोअर त्रुटी: ' + err.message, false);
-        window.showToast('रिस्टोअर अयशस्वी: ' + err.message, 'error');
-      } finally {
-        restoreDbBtn.disabled = false;
-        restoreDbBtn.textContent = 'फाईल निवडा';
+        alert('बॅकअप रिस्टोअर त्रुटी: ' + err.message);
       }
     });
-  }
-
-  if (window.AppDB) {
-    window.AppDB.onStatusChange(() => updateDbUI());
   }
 
   // ==========================================
@@ -702,18 +591,16 @@ document.addEventListener('DOMContentLoaded', () => {
       closeView();
       closeDelete();
       closeCloud();
-      closeDbModalFn();
     }
   });
 
-  [viewModal, deleteModal, cloudModal, dbModal].forEach(modal => {
+  [viewModal, deleteModal, cloudModal].forEach(modal => {
     if (modal) {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
           closeView();
           closeDelete();
           closeCloud();
-          closeDbModalFn();
         }
       });
     }
@@ -741,7 +628,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initial Data Load & Cloud Initialization
   loadData();
-  updateDbUI();
   updateCloudUI();
   if (window.CloudDB && window.CloudDB.isConfigured()) {
     window.CloudDB.init();

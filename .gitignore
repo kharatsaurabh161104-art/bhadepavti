@@ -3,7 +3,4 @@ scratch/
 .system_generated/
 *.log
 .DS_Store
-data/*.db-journal
-data/*.db-wal
-data/*.db-shm
-data/*.tmp
+data/

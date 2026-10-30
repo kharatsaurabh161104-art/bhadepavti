@@ -17,12 +17,24 @@ const CloudDB = {
    * Get currently saved Firebase configuration
    */
   getConfig() {
+    // 1. Check if user configured in localStorage (takes precedence)
     try {
       const raw = localStorage.getItem(this.CONFIG_STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.projectId && parsed.projectId.trim() !== '') {
+          return parsed;
+        }
+      }
     } catch (e) {
       console.warn('Failed to parse Firebase config:', e);
     }
+
+    // 2. Check if central global config exists in js/config.js (window.FIREBASE_CONFIG)
+    if (window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.projectId && window.FIREBASE_CONFIG.projectId.trim() !== '' && window.FIREBASE_CONFIG.projectId !== 'YOUR_PROJECT_ID') {
+      return window.FIREBASE_CONFIG;
+    }
+
     return null;
   },
 

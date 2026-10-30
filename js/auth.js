@@ -13,7 +13,7 @@ const AUTH_CONFIG = {
 
 const Auth = {
   /**
-   * Attempt login against SQLite Database API (with offline fallback)
+   * Attempt login
    */
   async login(username, password) {
     const trimmedUser = (username || '').trim();
@@ -23,50 +23,12 @@ const Auth = {
       return { success: false, message: 'कृपया युझरनेम आणि पासवर्ड टाका (Please enter username and password)' };
     }
 
-    // 1. Try Server Database Login
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: trimmedUser, password: trimmedPass }),
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
-
-      const data = await res.json();
-      if (res.ok && data.success && data.user) {
-        const sessionData = {
-          id: data.user.id,
-          username: data.user.username,
-          name: data.user.fullName || data.user.name || 'Admin',
-          role: data.user.role || 'Administrator',
-          loginTime: new Date().toISOString(),
-          isDatabaseAuth: true
-        };
-        localStorage.setItem(AUTH_CONFIG.STORAGE_KEY, JSON.stringify(sessionData));
-        return { success: true, user: sessionData };
-      } else {
-        return {
-          success: false,
-          message: data.message || 'अवैध युझरनेम किंवा पासवर्ड! (Invalid username or password)'
-        };
-      }
-    } catch (err) {
-      console.warn('[Auth] Server API login not reachable, attempting offline fallback:', err.message);
-    }
-
-    // 2. Offline Fallback for default credentials or static preview
     if (trimmedUser === AUTH_CONFIG.VALID_USER && trimmedPass === AUTH_CONFIG.VALID_PASS) {
       const sessionData = {
         username: trimmedUser,
         name: 'Onpoint Services Admin',
         role: 'Administrator',
-        loginTime: new Date().toISOString(),
-        isDatabaseAuth: false,
-        offlineMode: true
+        loginTime: new Date().toISOString()
       };
       localStorage.setItem(AUTH_CONFIG.STORAGE_KEY, JSON.stringify(sessionData));
       return { success: true, user: sessionData };

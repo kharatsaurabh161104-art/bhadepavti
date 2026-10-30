@@ -440,10 +440,15 @@ const AffidavitStore = {
   },
 
   async fetchAll() {
-    if (window.AppDB && typeof window.AppDB.fetchAllAffidavits === 'function') {
-      const records = await window.AppDB.fetchAllAffidavits();
-      if (Array.isArray(records)) {
-        return records;
+    if (window.CloudDB && window.CloudDB.isConfigured()) {
+      try {
+        const cloudRecords = await window.CloudDB.fetchAll();
+        if (Array.isArray(cloudRecords) && cloudRecords.length) {
+          this.mergeCloudRecords(cloudRecords);
+          return this.getAll();
+        }
+      } catch (e) {
+        console.warn('Cloud fetch notice:', e);
       }
     }
     return this.getAll();
@@ -455,20 +460,7 @@ const AffidavitStore = {
   },
 
   async getByIdAsync(id) {
-    const cached = this.getById(id);
-    if (cached) return cached;
-    if (window.AppDB && typeof window.AppDB.fetchAffidavitById === 'function') {
-      const record = await window.AppDB.fetchAffidavitById(id);
-      if (record) {
-        const list = this.getAll();
-        const idx = list.findIndex(r => r.id === record.id);
-        if (idx !== -1) list[idx] = record;
-        else list.unshift(record);
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
-        return record;
-      }
-    }
-    return null;
+    return this.getById(id);
   },
 
   syncFromDatabase(serverRecords) {
@@ -520,13 +512,6 @@ const AffidavitStore = {
       savedRecord = newRecord;
     }
 
-    // Save directly to Backend SQLite Database
-    if (window.AppDB && typeof window.AppDB.saveAffidavit === 'function') {
-      window.AppDB.saveAffidavit(savedRecord).catch(err => {
-        console.warn('Background SQLite save error:', err);
-      });
-    }
-
     // Asynchronously sync to Cloud Firebase if configured
     if (window.CloudDB && typeof window.CloudDB.saveRecord === 'function') {
       window.CloudDB.saveRecord(savedRecord).catch(err => {
@@ -545,13 +530,6 @@ const AffidavitStore = {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
     } catch (e) {
       console.warn('LocalStorage delete warning:', e);
-    }
-
-    // Delete directly from Backend SQLite Database
-    if (window.AppDB && typeof window.AppDB.deleteAffidavit === 'function') {
-      window.AppDB.deleteAffidavit(id).catch(err => {
-        console.warn('Background SQLite delete error:', err);
-      });
     }
 
     // Asynchronously delete from Cloud Firebase if configured

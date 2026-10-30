@@ -72,22 +72,12 @@
         </div>
 
         <div class="navbar-actions">
-          <button type="button" id="dbManageBtn" class="cloud-sync-btn" title="डेटाबेस स्थिती व बॅकअप व्यवस्थापन">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-            </svg>
-            <span id="dbStatusDot" class="status-dot dot-online"></span>
-            <span id="dbStatusText">SQLite डेटाबेस</span>
-          </button>
-
-          <button type="button" id="cloudSyncBtn" class="cloud-sync-btn" title="Firebase क्लाउड डेटाबेस सिंक">
+          <button type="button" id="cloudSyncBtn" class="cloud-sync-btn" title="Google Firebase क्लाउड डेटाबेस सिंक">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
             </svg>
             <span id="cloudStatusDot" class="status-dot dot-offline"></span>
-            <span id="cloudStatusText">Firebase क्लाउड</span>
+            <span id="cloudStatusText">क्लाउड डेटाबेस</span>
           </button>
 
           <a href="create-affidavit.html" class="btn-accent">
@@ -282,8 +272,8 @@
     </div>
   </div>
 
-  <!-- CLOUD SYNC SETTINGS MODAL -->
-  <div id="cloudModal" class="modal-backdrop no-print">
+  <!-- CLOUD SYNC SETTINGS & BACKUP MODAL -->
+  <div id="cloudModal" class="modal-overlay no-print">
     <div class="modal-card cloud-modal-card">
       <div class="modal-header">
         <div style="display: flex; align-items: center; gap: 10px;">
@@ -293,8 +283,8 @@
             </svg>
           </div>
           <div>
-            <h3>Google Firebase क्लाउड डेटाबेस</h3>
-            <p style="font-size: 12px; color: #64748b; margin: 0;">सर्व मोबाईल व संगणकांवर डेटा सिंक करण्यासाठी मोफत Firebase जोडा</p>
+            <h3>क्लाउड डेटाबेस व बॅकअप (Cloud Database & Backup)</h3>
+            <p style="font-size: 12px; color: #64748b; margin: 0;">सर्व मोबाईल व संगणकांवर डेटा सिंक करण्यासाठी Google Firebase</p>
           </div>
         </div>
         <button id="closeCloudModal" class="modal-close-btn" title="बंद करा">
@@ -312,16 +302,27 @@
             <span id="cloudBannerDot" class="status-dot dot-offline"></span>
             <strong id="cloudBannerTitle">लोकल स्टोरेज मोड (Local Storage Mode)</strong>
           </div>
-          <p id="cloudBannerDesc" style="font-size: 12.5px; margin: 0; line-height: 1.5;">डेटा सध्या तुमच्या ब्राऊझरमध्ये स्थानिक पातळीवर सुरक्षित आहे. इतर डिव्हाइसेसवर डेटा सिंक करण्यासाठी खाली मोफत Firebase जोडा.</p>
+          <p id="cloudBannerDesc" style="font-size: 12.5px; margin: 0; line-height: 1.5;">सर्व डिव्हाइसेसवर ऑटोमॅटिक डेटा सिंक करण्यासाठी खाली मोफत Firebase जोडा किंवा <code>js/config.js</code> मध्ये सेव्ह करा.</p>
+        </div>
+
+        <!-- BACKUP / RESTORE SHORTCUTS -->
+        <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+          <button type="button" id="backupJsonBtn" class="btn-secondary" style="flex: 1; padding: 10px; font-size: 12.5px; font-weight: 600;">
+            💾 डेटा बॅकअप डाऊनलोड (JSON)
+          </button>
+          <input type="file" id="restoreJsonInput" accept=".json" style="display: none;">
+          <button type="button" id="restoreJsonBtn" class="btn-secondary" style="flex: 1; padding: 10px; font-size: 12.5px; font-weight: 600;">
+            📥 बॅकअप फाईल रिस्टोअर
+          </button>
         </div>
 
         <!-- QUICK INSTRUCTIONS -->
         <div class="cloud-guide-box">
-          <h4 style="font-size: 13px; margin: 0 0 8px 0; color: #1e293b;">⚡ २ मिनिटांत मोफत Firebase कसे चालू करायचे?</h4>
+          <h4 style="font-size: 13px; margin: 0 0 8px 0; color: #1e293b;">⚡ मोफत Firebase क्लाउड कसे जोडायचे?</h4>
           <ol style="font-size: 12.5px; color: #475569; margin: 0; padding-left: 18px; line-height: 1.6;">
-            <li><a href="https://console.firebase.google.com/" target="_blank" style="color: #2563eb; text-decoration: underline; font-weight: 600;">console.firebase.google.com</a> वर जाऊन <strong>'Add project'</strong> करा (उदा. <code>bhadepavti</code>).</li>
-            <li>डाव्या मेनूमध्ये <strong>Build ➔ Firestore Database</strong> निवडून <strong>'Create database'</strong> ➔ <strong>'Start in test mode'</strong> निवडून सुरू करा.</li>
-            <li>होमपेजवर वेब आयकॉन (<strong>&lt;/&gt;</strong>) वर क्लिक करून ॲप रजिस्टर करा आणि <code>firebaseConfig</code> कोड कॉपी करून खाली पेस्ट करा.</li>
+            <li><a href="https://console.firebase.google.com/" target="_blank" style="color: #2563eb; text-decoration: underline; font-weight: 600;">console.firebase.google.com</a> वर मोफत प्रोजेक्ट तयार करा (उदा. <code>bhadepavti</code>).</li>
+            <li>डाव्या मेनूमध्ये <strong>Build ➔ Firestore Database ➔ Create database</strong> (Start in test mode).</li>
+            <li>प्रोजेक्ट सेटिंग्समधून <code>firebaseConfig</code> कोड कॉपी करून खाली पेस्ट करा (किंवा <code>js/config.js</code> मध्ये टाका).</li>
           </ol>
         </div>
 
@@ -333,7 +334,7 @@
           <textarea 
             id="firebaseConfigInput" 
             class="form-control" 
-            rows="5" 
+            rows="4" 
             placeholder='const firebaseConfig = {&#10;  apiKey: "AIzaSy...",&#10;  projectId: "bhadepavti",&#10;  ...&#10;};'
             style="font-family: monospace; font-size: 12px;"
           ></textarea>
@@ -358,120 +359,15 @@
     </div>
   </div>
 
-  <!-- SQLITE DATABASE MANAGEMENT MODAL -->
-  <div id="dbModal" class="modal-backdrop no-print">
-    <div class="modal-card db-modal-card">
-      <div class="modal-header">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div class="cloud-modal-icon" style="background: #ecfdf5;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
-              <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-            </svg>
-          </div>
-          <div>
-            <h3>डेटाबेस व्यवस्थापन व सुरक्षा (Database Manager)</h3>
-            <p style="font-size: 12px; color: #64748b; margin: 0;">सर्व भाडे करारनामे आणि युझर्स सुरक्षित साठवणूक व बॅकअप</p>
-          </div>
-        </div>
-        <button id="closeDbModal" class="modal-close-btn" title="बंद करा">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
+  <!-- Central Cloud Database Config -->
+  <script src="js/config.js"></script>
 
-      <div class="modal-body">
-        <!-- STATUS BANNER -->
-        <div id="dbStatusBanner" class="cloud-status-banner banner-connected">
-          <div class="banner-indicator">
-            <span id="dbBannerDot" class="status-dot dot-online"></span>
-            <strong id="dbBannerTitle">SQLite डेटाबेस सक्रिय (SQLite DB Active)</strong>
-          </div>
-          <p id="dbBannerDesc" style="font-size: 12.5px; margin: 0; line-height: 1.5;">
-            सर्व डेटाबेस रेकॉर्ड्स <code>data/bhadepavti.db</code> मध्ये सुरक्षितपणे साठवले जात आहेत. तुम्ही कधीही एडिट किंवा पीडीएफ डाउनलोड करू शकता.
-          </p>
-        </div>
-
-        <!-- STATS PANEL -->
-        <div class="db-stats-panel">
-          <div class="db-stat-box">
-            <div id="dbTotalRecordsVal" class="db-stat-val">0</div>
-            <div class="db-stat-lbl">एकूण भाडे पत्रे</div>
-          </div>
-          <div class="db-stat-box">
-            <div id="dbMonthRecordsVal" class="db-stat-val">0</div>
-            <div class="db-stat-lbl">चालू महिना</div>
-          </div>
-          <div class="db-stat-box">
-            <div id="dbUsersVal" class="db-stat-val">1</div>
-            <div class="db-stat-lbl">सक्रिय युझर्स</div>
-          </div>
-          <div class="db-stat-box">
-            <div id="dbEngineVal" class="db-stat-val" style="font-size: 16px;">SQLite</div>
-            <div class="db-stat-lbl">डेटाबेस प्रकार</div>
-          </div>
-        </div>
-
-        <!-- ACTION LIST -->
-        <div class="db-actions-list">
-          <!-- 1. Download Backup -->
-          <div class="db-action-row">
-            <div class="db-action-info">
-              <h4>💾 डेटाबेस बॅकअप (Backup Download)</h4>
-              <p>सर्व भाडे करारनामे आणि युझर्स एका क्लिकवर JSON फाईलमध्ये डाउनलोड करा.</p>
-            </div>
-            <button type="button" id="downloadDbBackupBtn" class="btn-secondary" style="white-space: nowrap;">
-              बॅकअप डाऊनलोड
-            </button>
-          </div>
-
-          <!-- 2. Refresh / Re-sync -->
-          <div class="db-action-row">
-            <div class="db-action-info">
-              <h4>🔄 डेटाबेस रिफ्रेश (Re-sync from Database)</h4>
-              <p>डेटाबेसमधून ताजी माहिती पुन्हा लोड करा आणि टेबल अपडेट करा.</p>
-            </div>
-            <button type="button" id="refreshDbBtn" class="btn-secondary" style="white-space: nowrap;">
-              री-सिंक करा
-            </button>
-          </div>
-
-          <!-- 3. Restore Backup -->
-          <div class="db-action-row">
-            <div class="db-action-info">
-              <h4>📥 बॅकअप फाईल रिस्टोअर (Restore Backup)</h4>
-              <p>पूर्वी डाउनलोड केलेली JSON बॅकअप फाईल पुन्हा डेटाबेसमध्ये समाविष्ट करा.</p>
-            </div>
-            <div>
-              <input type="file" id="dbRestoreFileInput" accept=".json" style="display: none;">
-              <button type="button" id="restoreDbBtn" class="btn-secondary" style="white-space: nowrap;">
-                फाईल निवडा
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div id="dbFeedbackMsg" style="display: none; padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-top: 14px;"></div>
-      </div>
-
-      <div class="modal-footer" style="display: flex; justify-content: flex-end;">
-        <button type="button" id="closeDbModalBtn" class="btn-primary" style="width: auto;">
-          पूर्ण झाले (Close)
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Firebase SDK Scripts (Compat for pure static browser usage) -->
+  <!-- Firebase SDK Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="js/cloud-db.js"></script>
 
-  <!-- Database & Vendor Scripts -->
-  <script src="js/db.js"></script>
+  <!-- Vendor Scripts -->
   <script src="js/vendor/jspdf.umd.min.js"></script>
   <script src="js/vendor/html2canvas.min.js"></script>
   

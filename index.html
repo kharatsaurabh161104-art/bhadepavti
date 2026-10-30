@@ -19,12 +19,6 @@
 
     <form id="loginForm" class="login-form">
       <div id="loginError" style="display:none; padding:10px 14px; background:#fef2f2; border:1px solid #fecaca; border-radius:8px; color:#b91c1c; font-size:13px; margin-bottom:18px;"></div>
-      
-      <!-- Database Connection Status Badge -->
-      <div id="dbStatusBadge" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:6px 12px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:20px; font-size:12px; color:#166534; font-weight:500; margin-bottom:18px;">
-        <span class="status-dot dot-online" style="width:7px; height:7px;"></span>
-        <span id="dbStatusBadgeText">डेटाबेस तपासत आहे...</span>
-      </div>
 
       <div class="form-group">
         <label for="username" class="form-label">युझरनेम (Username)</label>
@@ -82,7 +76,6 @@
     All rights reserved to ePoint Services through SK Tech Services and Solutions @2026
   </footer>
 
-  <script src="js/db.js"></script>
   <script src="js/auth.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -97,37 +90,6 @@
       const errorDiv = document.getElementById('loginError');
       const toggleBtn = document.getElementById('togglePasswordBtn');
       const loginBtn = document.getElementById('loginBtn');
-      const dbStatusBadge = document.getElementById('dbStatusBadge');
-      const dbStatusBadgeText = document.getElementById('dbStatusBadgeText');
-
-      // Update Database Status Badge
-      function updateDbBadge(status, isConnected, engine) {
-        if (!dbStatusBadgeText) return;
-        if (isConnected) {
-          dbStatusBadge.style.background = '#f0fdf4';
-          dbStatusBadge.style.borderColor = '#bbf7d0';
-          dbStatusBadge.style.color = '#166534';
-          const dot = dbStatusBadge.querySelector('.status-dot');
-          if (dot) dot.className = 'status-dot dot-online';
-          dbStatusBadgeText.textContent = `डेटाबेस सक्रिय (${(engine || 'SQLite').toUpperCase()} DB)`;
-        } else {
-          dbStatusBadge.style.background = '#fffbeb';
-          dbStatusBadge.style.borderColor = '#fde68a';
-          dbStatusBadge.style.color = '#92400e';
-          const dot = dbStatusBadge.querySelector('.status-dot');
-          if (dot) dot.className = 'status-dot dot-offline';
-          dbStatusBadgeText.textContent = 'ऑफलाइन / लोकल मोड (Local Storage)';
-        }
-      }
-
-      if (window.AppDB) {
-        window.AppDB.onStatusChange(data => {
-          updateDbBadge(data.status, data.isConnected, data.engine);
-        });
-        window.AppDB.checkConnection().then(conn => {
-          updateDbBadge(conn ? 'connected' : 'offline', conn, window.AppDB.serverEngine);
-        });
-      }
 
       // Password toggle
       toggleBtn.addEventListener('click', () => {
@@ -153,7 +115,7 @@
             errorDiv.style.display = 'block';
           }
         } catch (err) {
-          errorDiv.textContent = 'लॉगिन त्रुटी: ' + (err.message || 'सर्व्हरशी संपर्क होऊ शकला नाही');
+          errorDiv.textContent = 'लॉगिन त्रुटी: ' + (err.message || 'त्रुटी आली');
           errorDiv.style.display = 'block';
         } finally {
           loginBtn.disabled = false;

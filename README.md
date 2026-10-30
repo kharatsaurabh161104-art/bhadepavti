@@ -1,116 +1,111 @@
-# Onpoint Services — Bhade Pavati (भाडे चिठ्ठी/भाडे पत्र करारनामा) PDF Generator & Database System
+# Onpoint Services — भाडे पावती (भाडे चिठ्ठी / भाडे पत्र करारनामा) PDF Generator
 
-An authentic, production-grade web application built for **Onpoint Services** to generate official **two-page / three-page A4 Bhade Pavati (भाडे चिठ्ठी/भाडे पत्र करारनामा)** and **स्वयंघोषणापत्र (Self-Declaration)** documents in Marathi Devanagari, powered by an integrated **SQLite Enterprise Database** for permanent record storage, login authentication, future editing, and instant PDF downloads.
-
----
-
-## 🌟 Key Features
-
-1. **Integrated SQLite Enterprise Database**:
-   - Built-in SQLite database (`data/bhadepavti.db`) stores all user logins and affidavits permanently.
-   - Dual-engine architecture: uses high-speed SQLite with seamless fallback to atomic JSON storage.
-   - Zero external installations required (uses Node.js built-in database engine).
-   - 1-Click Database Backup (JSON export) & Instant Restore.
-
-2. **Perpetual Record History & Future Edits**:
-   - Every created or edited affidavit is saved with full details (tenant, owner, rent, address, college, dates, photo, swadhar declaration).
-   - You can log in anytime, search by student name or owner name, edit any field, and immediately download the updated PDF.
-
-3. **Secure Authentication from Database**:
-   - User credentials stored securely with salted password hashing.
-   - Persistent session management with role-based access.
-
-4. **Exact 2-Page & 3-Page A4 Marathi Layout**:
-   - **Page 1**: भाडे चिठ्ठी/भाडे पत्र करारनामा, reference circulars, tenant and owner details, property description, rent conditions, 6 numbered legal clauses, and final declaration: *"सदर या परवान्याचा करारनामा मी स्व:खुशीने अवकल हुशारीने लिहून दिला आहे."*
-   - **Page 2**: Tenant & Owner signature areas (side-by-side), supporting documents list (लाइट बिल, आधार कार्ड, मोबाईल क्रमांक), Underlined Government Decision (*शासन निर्णय क्रमांक: प्रसुधा १६१४/३४५/प्र.क्र.७१/१८-अ*), **प्रपत्र-अ स्वयंघोषणापत्र**, and applicant photograph box (*अर्जदाराचा फोटो*).
-   - **Page 3 (Optional Swadhar)**: डॉ. बाबासाहेब आंबेडकर स्वाधार योजना - विद्यार्थ्याचे स्वयंघोषणापत्र.
-   - **Zero Spillover**: Strict A4 portrait sizing (210mm x 297mm) guarantees exact pagination with zero overflow.
-
-5. **Accurate Devanagari Unicode Rendering**:
-   - High-DPI canvas rasterization (`scale: 2.5`) + jsPDF ensures 100% glyph accuracy without broken conjuncts, missing matras, or font encoding failures.
-   - Built-in `print.css` for instant vector printing via browser (`Ctrl + P`).
-
-6. **Real-Time Marathi Number-to-Words Converter**:
-   - As you type numbers in the monthly rent field (e.g. `3500`), it automatically converts to Marathi words (*तीन हजार पाचशे*).
+अधिकृत **Onpoint Services** साठी बनवलेली २-पानी / ३-पानी A4 **भाडे चिठ्ठी/भाडे पत्र करारनामा** आणि **स्वाधार स्वयंघोषणापत्र** जनरेटर प्रणाली.
 
 ---
 
-## 🔑 Login Credentials
+## 🌟 वैशिष्ट्ये (Key Features)
 
-- **Username**: `@Onpoint_Services`
-- **Password**: `Onpoint@123`
+1. **संपूर्ण डिव्हाइस सिंक (Cloud Database Sync)**:
+   - लॅपटॉपवर तयार केलेले भाडे पत्र थेट **मोबाईल फोनवर** आणि **इतर कोणत्याही कॉम्प्युटरवर** आपोआप दिसते.
+   - Google Firebase Firestore (१००% मोफत) क्लाउड सिंकद्वारे सर्व डेटा रिअल-टाइम सुरक्षित राहतो.
+   - १-क्लिकमध्ये **डेटा बॅकअप डाऊनलोड (JSON)** आणि **रिस्टोअर** करण्याची सोय.
 
-*(Stored securely in `data/bhadepavti.db` `users` table).*
+2. **अचूक A4 मराठी लेआउट (२ पाने व स्वाधार ३ रे पान)**:
+   - **पान १**: भाडे पत्र करारनामा, शासन निर्णय संदर्भ, घरमालक व विद्यार्थी तपशील, मालमत्ता माहिती, ६ कायदेशीर अटी व स्वयंघोषणा.
+   - **पान २**: घरमालक व भाडेकरू स्वाक्षरी, आवश्यक कागदपत्रे सूची (लाईट बिल, आधार, मोबाईल), प्रपत्र-अ स्वयंघोषणापत्र व फोटो बॉक्स.
+   - **पान ३ (पर्यायी)**: डॉ. बाबासाहेब आंबेडकर स्वाधार योजना स्वयंघोषणापत्र.
+
+3. **अचूक देवनागरी व हाय-डीपीआय PDF**:
+   - High-DPI canvas (`scale: 2.5`) + jsPDF द्वारे स्पष्ट, न फाटता येणारी A4 PDF डाऊनलोड.
+   - मराठी अक्षरी रक्कम रूपांतरक (उदा. `३५००` टाकताच *"तीन हजार पाचशे"* ऑटोमॅटिक येते).
+
+4. **सुरक्षित लॉगिन**:
+   - **युझरनेम**: `@Onpoint_Services`
+   - **पासवर्ड**: `Onpoint@123`
 
 ---
 
-## 🚀 How to Run Locally on Windows
+## 📱 सर्व मोबाईल आणि संगणकांवर डेटा कसा दिसेल? (Cloud Database Setup)
 
-1. Open PowerShell or Command Prompt in this folder:
-   ```powershell
-   cd "c:\Users\khara\OneDrive\Desktop\bhadepavti"
+> **महत्त्वाची नोंद**: जर डेटा फक्त एका कॉम्प्युटरवर दिसत असेल आणि मोबाईलवर दिसत नसेल, तर याचे कारण तो डेटा फक्त त्या कॉम्प्युटरच्या ब्राऊझरमध्ये स्थानिक (Local) साठवला गेला आहे. सर्व मोबाईल आणि संगणकांवर डेटा आपोआप दिसण्यासाठी खालील **२ मिनिटांची मोफत पायरी** करा:
+
+### Google Firebase Firestore सेटअप (१००% मोफत):
+
+1. **[console.firebase.google.com](https://console.firebase.google.com/)** वर जा आणि गुगल अकाउंटने लॉगिन करा.
+2. **'Add project'** वर क्लिक करा ➔ प्रकल्पाचे नाव द्या (उदा. `onpoint-bhadepavti`).
+3. डाव्या मेनूमध्ये **Build** ➔ **Firestore Database** निवडा ➔ **'Create database'** वर क्लिक करा.
+4. लोकेशन निवडा (उदा. `nam5 (us-central)` किंवा `asia-south1`) ➔ नियम विचारल्यावर **'Start in test mode'** निवडा ➔ **Enable** करा.
+5. होमपेजवर वेब आयकॉन ( **`</>`** ) वर क्लिक करा ➔ ॲपचे नाव द्या ➔ **Register app** करा.
+6. स्क्रीनवर दिसणारा `firebaseConfig` कोड कॉपी करा:
+   ```javascript
+   const firebaseConfig = {
+     apiKey: "AIzaSy...",
+     authDomain: "bhadepavti.firebaseapp.com",
+     projectId: "bhadepavti",
+     storageBucket: "bhadepavti.appspot.com",
+     messagingSenderId: "...",
+     appId: "..."
+   };
    ```
-2. Start the database server:
-   ```powershell
-   node server.js
+7. या प्रोजेक्टमधील **`js/config.js`** फाईल उघडा आणि तो कोड तिथे सेव्ह करा:
+   ```javascript
+   window.FIREBASE_CONFIG = {
+     apiKey: "AIzaSy...",
+     authDomain: "bhadepavti.firebaseapp.com",
+     projectId: "bhadepavti",
+     storageBucket: "bhadepavti.appspot.com",
+     messagingSenderId: "...",
+     appId: "..."
+   };
    ```
-   *(or `npm start` / `npm run dev`)*
-3. Open your browser and visit:
-   ```
-   http://127.0.0.1:3000/
-   ```
+8. **Git push** करा ➔ Vercel ऑटोमॅटिक री-डिप्लॉय करेल!
+👉 **आता तुम्ही किंवा तुमचे ग्राहक कोणत्याही मोबाईल किंवा कॉम्प्युटरवरून लिंक उघडा — सर्व जुनी भाडे पत्रे आपोआप दिसतील!**
 
 ---
 
-## 📡 REST API Endpoints
+## 💾 तात्काळ बॅकअप ट्रान्सफर (पर्यायी पद्धत)
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/auth/login` | Authenticate user against database |
-| `POST` | `/api/auth/register` | Create a new user in database |
-| `GET` | `/api/affidavits` | List all saved affidavits (supports `q`, `from`, `to` filters) |
-| `GET` | `/api/affidavits/:id` | Get single affidavit details |
-| `POST` | `/api/affidavits` | Create new affidavit and save to SQLite DB |
-| `PUT` | `/api/affidavits/:id` | Update existing affidavit in SQLite DB |
-| `DELETE` | `/api/affidavits/:id` | Delete affidavit from SQLite DB |
-| `GET` | `/api/db/stats` | View database status, record counts, engine |
-| `GET` | `/api/db/export` | Download full database backup as JSON |
-| `POST` | `/api/db/import` | Restore database backup from JSON |
+जर तुम्हाला Firebase न वापरता एका कॉम्प्युटरवरून दुसऱ्या मोबाईलवर डेटा पाठवायचा असेल:
+1. डॅशबोर्डवर वरच्या **"क्लाउड डेटाबेस"** बटणावर क्लिक करा.
+2. **"💾 डेटा बॅकअप डाऊनलोड (JSON)"** वर क्लिक करा — एक छोटी फाईल डाऊनलोड होईल.
+3. ती फाईल व्हॉट्सॲपद्वारे मोबाईलवर पाठवा.
+4. मोबाईलवर वेबसाईट उघडून **"📥 बॅकअप फाईल रिस्टोअर"** वर क्लिक करून ती फाईल निवडा. एका सेकंदात सर्व डेटा मोबाईलवर येईल!
 
 ---
 
-## 📁 Project Structure
+## 🚀 GitHub आणि Vercel डिप्लॉयमेंट सूचना (Deployment Guide)
 
-```
-bhadepavti/
-├── index.html               # Secure login interface with live DB status badge
-├── dashboard.html           # Records management, search, filters, DB manager modal
-├── create-affidavit.html    # Form entry, edit mode, live 2/3-page A4 preview & save
-├── server.js                # Full Node.js REST API & static server
-├── server/
-│   └── db.js                # SQLite Database engine (with JSON fallback)
-├── data/
-│   └── bhadepavti.db        # SQLite database file (persists users & affidavits)
-├── js/
-│   ├── db.js                # Frontend Database client & sync manager
-│   ├── auth.js              # Database-driven authentication module
-│   ├── dashboard.js         # Table management, search, DB backup/restore
-│   ├── affidavit.js         # Form logic, Marathi converter & dual-storage store
-│   ├── pdf-generator.js     # High-DPI 2-page/3-page A4 PDF generation
-│   └── vendor/
-│       ├── jspdf.umd.min.js # jsPDF library
-│       └── html2canvas.min.js # html2canvas library
-├── css/
-│   ├── style.css            # Glassmorphism UI & responsive design
-│   └── print.css            # Precise 2-page/3-page A4 print & PDF stylesheet
-└── assets/
-    ├── logo.png             # Official Onpoint Services logo
-    └── fonts/               # Devanagari Unicode fonts (Noto Sans, Mangal)
+### १. GitHub वर पुश करणे:
+```powershell
+cd "c:\Users\khara\OneDrive\Desktop\bhadepavti"
+git add .
+git commit -m "Deploy ready: Clean UI, Vercel static build and cloud sync"
+git push origin main
 ```
 
+### २. Vercel वर डिप्लॉयमेंट:
+1. **[vercel.com](https://vercel.com/)** वर जाऊन लॉगिन करा.
+2. **"Add New Project"** ➔ **"Import Git Repository"** निवडून `bhadepavti` निवडा.
+3. Framework Preset: **Other** (किंवा Static).
+4. Build Command: रिकामे ठेवा (किंवा काही नको).
+5. Output Directory: `.` (किंवा रिकामे).
+6. **"Deploy"** बटणावर क्लिक करा!
+7. २ ते ५ सेकंदात तुमची लाईव्ह लिंक तयार होईल (उदा. `https://bhadepavti.vercel.app`).
+
 ---
 
-## 📄 License & Attribution
+## 💻 लोकल कॉम्प्युटरवर कसे चालवायचे?
 
-Developed for **Onpoint Services**.
+```powershell
+cd "c:\Users\khara\OneDrive\Desktop\bhadepavti"
+node scripts/dev-server.js
+```
+ब्राऊझरमध्ये उघडा: `http://localhost:3000`
+
+---
+
+## 📄 हक्क व श्रेय (Attribution)
+
+Developed for **Onpoint Services**.  
 All rights reserved to ePoint Services through SK Tech Services and Solutions @2026.
