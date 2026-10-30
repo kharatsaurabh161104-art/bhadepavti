@@ -30,9 +30,10 @@ const CloudDB = {
       console.warn('Failed to parse Firebase config:', e);
     }
 
-    // 2. Check if central global config exists in js/config.js (window.FIREBASE_CONFIG)
-    if (window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.projectId && window.FIREBASE_CONFIG.projectId.trim() !== '' && window.FIREBASE_CONFIG.projectId !== 'YOUR_PROJECT_ID') {
-      return window.FIREBASE_CONFIG;
+    // 2. Check if central global config exists in js/config.js (window.FIREBASE_CONFIG or window.firebaseConfig)
+    const cfg = window.FIREBASE_CONFIG || window.firebaseConfig;
+    if (cfg && cfg.projectId && cfg.projectId.trim() !== '' && cfg.projectId !== 'YOUR_PROJECT_ID') {
+      return cfg;
     }
 
     return null;

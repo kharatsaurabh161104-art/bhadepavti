@@ -633,11 +633,19 @@ document.addEventListener('DOMContentLoaded', () => {
     window.CloudDB.init();
     updateCloudUI();
     startCloudListener();
-    // Background pull
+    // Background pull & auto-seed cloud if empty
     window.CloudDB.fetchAll().then(cloudRecords => {
       if (cloudRecords && cloudRecords.length) {
         window.AffidavitStore.mergeCloudRecords(cloudRecords);
         loadData();
+      } else {
+        // If Firestore is empty, auto-upload initial local records
+        const local = window.AffidavitStore.getAll();
+        if (local && local.length) {
+          window.CloudDB.syncLocalToCloud().then(() => {
+            console.log('Initial local records synced to Cloud Firestore');
+          }).catch(console.warn);
+        }
       }
     }).catch(console.warn);
   }
