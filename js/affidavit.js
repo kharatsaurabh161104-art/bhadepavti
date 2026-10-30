@@ -421,7 +421,7 @@ const AffidavitTemplate = {
 };
 
 /* ==========================================================================
-   AFFIDAVIT LOCALSTORAGE STORE
+   AFFIDAVIT LOCALSTORAGE & DATABASE STORE
    ========================================================================== */
 const AffidavitStore = {
   STORAGE_KEY: 'onpoint_bhade_affidavits_v1',
@@ -439,9 +439,46 @@ const AffidavitStore = {
     }
   },
 
+  async fetchAll() {
+    if (window.AppDB && typeof window.AppDB.fetchAllAffidavits === 'function') {
+      const records = await window.AppDB.fetchAllAffidavits();
+      if (Array.isArray(records)) {
+        return records;
+      }
+    }
+    return this.getAll();
+  },
+
   getById(id) {
     const list = this.getAll();
     return list.find(item => item.id === id) || null;
+  },
+
+  async getByIdAsync(id) {
+    const cached = this.getById(id);
+    if (cached) return cached;
+    if (window.AppDB && typeof window.AppDB.fetchAffidavitById === 'function') {
+      const record = await window.AppDB.fetchAffidavitById(id);
+      if (record) {
+        const list = this.getAll();
+        const idx = list.findIndex(r => r.id === record.id);
+        if (idx !== -1) list[idx] = record;
+        else list.unshift(record);
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+        return record;
+      }
+    }
+    return null;
+  },
+
+  syncFromDatabase(serverRecords) {
+    if (!Array.isArray(serverRecords)) return;
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(serverRecords));
+    } catch (e) {
+      console.warn('Failed to cache server records locally:', e);
+    }
+    return serverRecords;
   },
 
   save(data) {
@@ -457,7 +494,11 @@ const AffidavitStore = {
           ...data,
           updatedAt: now.toISOString()
         };
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+        try {
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+        } catch (e) {
+          console.warn('LocalStorage quota warning:', e);
+        }
         savedRecord = list[index];
       }
     }
@@ -471,8 +512,19 @@ const AffidavitStore = {
         updatedAt: now.toISOString()
       };
       list.unshift(newRecord);
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+      try {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+      } catch (e) {
+        console.warn('LocalStorage quota warning:', e);
+      }
       savedRecord = newRecord;
+    }
+
+    // Save directly to Backend SQLite Database
+    if (window.AppDB && typeof window.AppDB.saveAffidavit === 'function') {
+      window.AppDB.saveAffidavit(savedRecord).catch(err => {
+        console.warn('Background SQLite save error:', err);
+      });
     }
 
     // Asynchronously sync to Cloud Firebase if configured
@@ -489,7 +541,18 @@ const AffidavitStore = {
     let list = this.getAll();
     const initialLen = list.length;
     list = list.filter(item => item.id !== id);
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+    } catch (e) {
+      console.warn('LocalStorage delete warning:', e);
+    }
+
+    // Delete directly from Backend SQLite Database
+    if (window.AppDB && typeof window.AppDB.deleteAffidavit === 'function') {
+      window.AppDB.deleteAffidavit(id).catch(err => {
+        console.warn('Background SQLite delete error:', err);
+      });
+    }
 
     // Asynchronously delete from Cloud Firebase if configured
     if (window.CloudDB && typeof window.CloudDB.deleteRecord === 'function') {

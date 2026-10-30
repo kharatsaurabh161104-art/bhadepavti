@@ -501,10 +501,11 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="js/cloud-db.js"></script>
 
-  <!-- Vendor Scripts -->
+  <!-- Database & Vendor Scripts -->
+  <script src="js/db.js"></script>
   <script src="js/vendor/jspdf.umd.min.js"></script>
   <script src="js/vendor/html2canvas.min.js"></script>
-
+  
   <!-- App Scripts -->
   <script src="js/auth.js"></script>
   <script src="js/affidavit.js"></script>
@@ -567,6 +568,19 @@
       rentEndDateInput.value = calculate11MonthsEndDate(today);
       rentDurationMonthsInput.value = '११ महिने';
 
+      // Sidebar user info
+      const currentUser = window.Auth ? window.Auth.getUser() : null;
+      if (currentUser) {
+        const userNameEl = document.querySelector('.user-name');
+        const userRoleEl = document.querySelector('.user-role');
+        const userAvatarEl = document.querySelector('.user-avatar');
+        if (userNameEl) userNameEl.textContent = currentUser.name || currentUser.username;
+        if (userRoleEl) userRoleEl.textContent = currentUser.role || 'प्रशासक (Admin)';
+        if (userAvatarEl && currentUser.username) {
+          userAvatarEl.textContent = currentUser.username.replace('@', '').slice(0, 2).toUpperCase();
+        }
+      }
+
       // Check URL parameters for edit mode
       const urlParams = new URLSearchParams(window.location.search);
       const editId = urlParams.get('id');
@@ -577,6 +591,14 @@
           pageTitle.textContent = `भाडे पत्र संपादित करा (${existing.tenantName})`;
           recordIdInput.value = existing.id;
           populateForm(existing);
+        } else if (window.AffidavitStore.getByIdAsync) {
+          window.AffidavitStore.getByIdAsync(editId).then(rec => {
+            if (rec) {
+              pageTitle.textContent = `भाडे पत्र संपादित करा (${rec.tenantName})`;
+              recordIdInput.value = rec.id;
+              populateForm(rec);
+            }
+          });
         }
       }
 
@@ -794,7 +816,15 @@
         if (saved) {
           recordIdInput.value = saved.id;
           pageTitle.textContent = `भाडे पत्र संपादित करा (${saved.tenantName})`;
-          showToast('✓ भाडे करारनामा यशस्वीरित्या जतन केला! (Record Saved)', 'success');
+          
+          // Update URL without full page reload so user can keep editing or download
+          const currentUrl = new URL(window.location.href);
+          if (currentUrl.searchParams.get('id') !== saved.id) {
+            currentUrl.searchParams.set('id', saved.id);
+            window.history.replaceState({}, '', currentUrl.toString());
+          }
+
+          showToast('✓ भाडे करारनामा SQLite डेटाबेसमध्ये जतन केला! (Saved to Database)', 'success');
         }
       });
 

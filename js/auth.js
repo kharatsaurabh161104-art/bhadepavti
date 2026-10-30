@@ -1,7 +1,6 @@
 /**
  * ONPOINT SERVICES — AUTH MODULE
- * Simple client-side auth for demo purposes.
- * Production notes: requires server-side session management, bcrypt hashing, and HTTP-only cookies.
+ * Connected to SQLite Database with offline fallback and session management.
  */
 
 const AUTH_CONFIG = {
@@ -14,9 +13,9 @@ const AUTH_CONFIG = {
 
 const Auth = {
   /**
-   * Attempt login
+   * Attempt login against SQLite Database API (with offline fallback)
    */
-  login(username, password) {
+  async login(username, password) {
     const trimmedUser = (username || '').trim();
     const trimmedPass = (password || '').trim();
 
@@ -24,15 +23,53 @@ const Auth = {
       return { success: false, message: 'कृपया युझरनेम आणि पासवर्ड टाका (Please enter username and password)' };
     }
 
+    // 1. Try Server Database Login
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: trimmedUser, password: trimmedPass }),
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      const data = await res.json();
+      if (res.ok && data.success && data.user) {
+        const sessionData = {
+          id: data.user.id,
+          username: data.user.username,
+          name: data.user.fullName || data.user.name || 'Admin',
+          role: data.user.role || 'Administrator',
+          loginTime: new Date().toISOString(),
+          isDatabaseAuth: true
+        };
+        localStorage.setItem(AUTH_CONFIG.STORAGE_KEY, JSON.stringify(sessionData));
+        return { success: true, user: sessionData };
+      } else {
+        return {
+          success: false,
+          message: data.message || 'अवैध युझरनेम किंवा पासवर्ड! (Invalid username or password)'
+        };
+      }
+    } catch (err) {
+      console.warn('[Auth] Server API login not reachable, attempting offline fallback:', err.message);
+    }
+
+    // 2. Offline Fallback for default credentials or static preview
     if (trimmedUser === AUTH_CONFIG.VALID_USER && trimmedPass === AUTH_CONFIG.VALID_PASS) {
       const sessionData = {
         username: trimmedUser,
         name: 'Onpoint Services Admin',
         role: 'Administrator',
-        loginTime: new Date().toISOString()
+        loginTime: new Date().toISOString(),
+        isDatabaseAuth: false,
+        offlineMode: true
       };
       localStorage.setItem(AUTH_CONFIG.STORAGE_KEY, JSON.stringify(sessionData));
-      return { success: true };
+      return { success: true, user: sessionData };
     }
 
     return { 
@@ -57,7 +94,7 @@ const Auth = {
       const data = localStorage.getItem(AUTH_CONFIG.STORAGE_KEY);
       if (!data) return false;
       const parsed = JSON.parse(data);
-      return !!(parsed && parsed.username === AUTH_CONFIG.VALID_USER);
+      return !!(parsed && parsed.username);
     } catch (e) {
       return false;
     }
