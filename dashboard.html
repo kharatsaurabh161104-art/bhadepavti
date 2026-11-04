@@ -72,14 +72,6 @@
         </div>
 
         <div class="navbar-actions">
-          <button type="button" id="cloudSyncBtn" class="cloud-sync-btn" title="Google Firebase क्लाउड डेटाबेस सिंक">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
-            </svg>
-            <span id="cloudStatusDot" class="status-dot dot-offline"></span>
-            <span id="cloudStatusText">क्लाउड डेटाबेस</span>
-          </button>
-
           <a href="create-affidavit.html" class="btn-accent">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -272,106 +264,12 @@
     </div>
   </div>
 
-  <!-- CLOUD SYNC SETTINGS & BACKUP MODAL -->
-  <div id="cloudModal" class="modal-overlay no-print">
-    <div class="modal-card cloud-modal-card">
-      <div class="modal-header">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div class="cloud-modal-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
-              <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
-            </svg>
-          </div>
-          <div>
-            <h3>क्लाउड डेटाबेस व बॅकअप (Cloud Database & Backup)</h3>
-            <p style="font-size: 12px; color: #64748b; margin: 0;">सर्व मोबाईल व संगणकांवर डेटा सिंक करण्यासाठी Google Firebase</p>
-          </div>
-        </div>
-        <button id="closeCloudModal" class="modal-close-btn" title="बंद करा">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-
-      <div class="modal-body">
-        <!-- STATUS BANNER -->
-        <div id="cloudStatusBanner" class="cloud-status-banner banner-local">
-          <div class="banner-indicator">
-            <span id="cloudBannerDot" class="status-dot dot-offline"></span>
-            <strong id="cloudBannerTitle">लोकल स्टोरेज मोड (Local Storage Mode)</strong>
-          </div>
-          <p id="cloudBannerDesc" style="font-size: 12.5px; margin: 0; line-height: 1.5;">सर्व डिव्हाइसेसवर ऑटोमॅटिक डेटा सिंक करण्यासाठी खाली मोफत Firebase जोडा किंवा <code>js/config.js</code> मध्ये सेव्ह करा.</p>
-        </div>
-
-        <!-- BACKUP / RESTORE SHORTCUTS -->
-        <div style="display: flex; gap: 10px; margin-bottom: 16px;">
-          <button type="button" id="backupJsonBtn" class="btn-secondary" style="flex: 1; padding: 10px; font-size: 12.5px; font-weight: 600;">
-            💾 डेटा बॅकअप डाऊनलोड (JSON)
-          </button>
-          <input type="file" id="restoreJsonInput" accept=".json" style="display: none;">
-          <button type="button" id="restoreJsonBtn" class="btn-secondary" style="flex: 1; padding: 10px; font-size: 12.5px; font-weight: 600;">
-            📥 बॅकअप फाईल रिस्टोअर
-          </button>
-        </div>
-
-        <!-- QUICK INSTRUCTIONS -->
-        <div class="cloud-guide-box">
-          <h4 style="font-size: 13px; margin: 0 0 8px 0; color: #1e293b;">⚡ मोफत Firebase क्लाउड कसे जोडायचे?</h4>
-          <ol style="font-size: 12.5px; color: #475569; margin: 0; padding-left: 18px; line-height: 1.6;">
-            <li><a href="https://console.firebase.google.com/" target="_blank" style="color: #2563eb; text-decoration: underline; font-weight: 600;">console.firebase.google.com</a> वर मोफत प्रोजेक्ट तयार करा (उदा. <code>bhadepavti</code>).</li>
-            <li>डाव्या मेनूमध्ये <strong>Build ➔ Firestore Database ➔ Create database</strong> (Start in test mode).</li>
-            <li>प्रोजेक्ट सेटिंग्समधून <code>firebaseConfig</code> कोड कॉपी करून खाली पेस्ट करा (किंवा <code>js/config.js</code> मध्ये टाका).</li>
-          </ol>
-        </div>
-
-        <div class="form-group" style="margin-top: 14px;">
-          <label for="firebaseConfigInput" class="form-label" style="display: flex; justify-content: space-between;">
-            <span>Firebase Configuration (JSON किंवा JS Code)</span>
-            <span style="font-size: 11.5px; color: #94a3b8;">apiKey, projectId, इ.</span>
-          </label>
-          <textarea 
-            id="firebaseConfigInput" 
-            class="form-control" 
-            rows="4" 
-            placeholder='const firebaseConfig = {&#10;  apiKey: "AIzaSy...",&#10;  projectId: "bhadepavti",&#10;  ...&#10;};'
-            style="font-family: monospace; font-size: 12px;"
-          ></textarea>
-        </div>
-
-        <div id="cloudFeedbackMsg" style="display: none; padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-top: 10px;"></div>
-      </div>
-
-      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-        <button type="button" id="disconnectCloudBtn" class="btn-secondary" style="color: #dc2626; border-color: #fecaca; display: none;">
-          डिस्कनेक्ट (Disconnect)
-        </button>
-        <div style="display: flex; gap: 8px; margin-left: auto;">
-          <button type="button" id="uploadLocalBtn" class="btn-secondary" style="display: none;" title="सध्याचा लोकल डेटा क्लाउडवर पाठवा">
-            📤 लोकल डेटा क्लाउडवर सिंक करा
-          </button>
-          <button type="button" id="saveCloudConfigBtn" class="btn-primary" style="width: auto;">
-            कनेक्ट करा व सेव्ह करा
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Central Cloud Database Config -->
-  <script src="js/config.js"></script>
-
-  <!-- Firebase SDK Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <script src="js/cloud-db.js"></script>
-
   <!-- Vendor Scripts -->
   <script src="js/vendor/jspdf.umd.min.js"></script>
   <script src="js/vendor/html2canvas.min.js"></script>
   
   <!-- App Scripts -->
+  <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/affidavit.js"></script>
   <script src="js/pdf-generator.js"></script>

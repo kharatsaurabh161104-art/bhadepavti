@@ -389,33 +389,10 @@
                       <circle cx="8.5" cy="8.5" r="1.5"></circle>
                       <polyline points="21 15 16 10 5 21"></polyline>
                     </svg>
-                    <span>४. सोबत कागदपत्रे व फोटो (Supporting Docs &amp; Photo)</span>
+                    <span>४. सोबत कागदपत्रे (Supporting Documents)</span>
                   </div>
                 </div>
                 <div class="form-card-body">
-                  <div class="photo-upload-zone">
-                    <div class="photo-preview-thumb" id="photoPreviewBox">
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                      </svg>
-                    </div>
-
-                    <div class="photo-upload-btn-wrap">
-                      <label class="btn-secondary" style="cursor:pointer; display:inline-flex;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                          <polyline points="17 8 12 3 7 8"></polyline>
-                          <line x1="12" y1="3" x2="12" y2="15"></line>
-                        </svg>
-                        <span>विद्यार्थ्याचा फोटो अपलोड करा</span>
-                        <input type="file" id="applicantPhotoInput" class="file-input-hidden" accept="image/*">
-                      </label>
-                      <button type="button" id="removePhotoBtn" class="btn-secondary" style="display:none; color:#ef4444; border-color:#fca5a5; margin-left:8px;">फोटो काढा</button>
-                      <p class="field-help" style="margin-top:6px;">पान २ वरील 'अर्जदाराचा फोटो' बॉक्समध्ये दर्शवला जाईल (JPG, PNG)</p>
-                    </div>
-                  </div>
-
                   <div style="background:#f8fafc; padding:14px 16px; border-radius:8px; border:1px solid #e2e8f0;">
                     <p style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:8px;">सोबत जोडलेली कागदपत्रे सूची (पान २):</p>
                     <ul style="font-size:12.5px; color:#475569; padding-left:20px; line-height:1.6;">
@@ -496,19 +473,12 @@
     </div>
   </div>
 
-  <!-- Central Cloud Database Config -->
-  <script src="js/config.js"></script>
-
-  <!-- Firebase SDK Scripts (Compat for pure static browser usage) -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <script src="js/cloud-db.js"></script>
-
   <!-- Vendor Scripts -->
   <script src="js/vendor/jspdf.umd.min.js"></script>
   <script src="js/vendor/html2canvas.min.js"></script>
   
   <!-- App Scripts -->
+  <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/affidavit.js"></script>
   <script src="js/pdf-generator.js"></script>
@@ -530,16 +500,11 @@
       const rentEndDateInput = document.getElementById('rentEndDate');
       const rentDurationMonthsInput = document.getElementById('rentDurationMonths');
       const agreementDateInput = document.getElementById('agreementDate');
-      const photoInput = document.getElementById('applicantPhotoInput');
-      const photoPreviewBox = document.getElementById('photoPreviewBox');
-      const removePhotoBtn = document.getElementById('removePhotoBtn');
       const includeSwadharInput = document.getElementById('includeSwadhar');
       const fillDemoBtn = document.getElementById('fillDemoBtn');
       const printBtn = document.getElementById('printBtn');
       const downloadPdfBtn = document.getElementById('downloadPdfBtn');
       const logoutBtn = document.getElementById('logoutBtn');
-
-      let applicantPhotoBase64 = '';
 
       // Accurate 11-month Maharashtra rent agreement calculation helper
       function calculate11MonthsEndDate(startDateStr) {
@@ -654,11 +619,6 @@
           includeSwadharInput.checked = !!data.includeSwadhar;
         }
 
-        if (data.applicantPhoto) {
-          applicantPhotoBase64 = data.applicantPhoto;
-          photoPreviewBox.innerHTML = `<img src="${applicantPhotoBase64}" alt="Applicant Photo" style="width:100%;height:100%;object-fit:cover;">`;
-          removePhotoBtn.style.display = 'inline-flex';
-        }
         updateLivePreview();
       }
 
@@ -705,39 +665,6 @@
         updateLivePreview();
       });
 
-      // Photo upload
-      photoInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        if (!file.type.startsWith('image/')) {
-          alert('कृपया वैध प्रतिमा (Image file) निवडा!');
-          return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          applicantPhotoBase64 = event.target.result;
-          photoPreviewBox.innerHTML = `<img src="${applicantPhotoBase64}" alt="Applicant Photo" style="width:100%;height:100%;object-fit:cover;">`;
-          removePhotoBtn.style.display = 'inline-flex';
-          updateLivePreview();
-        };
-        reader.readAsDataURL(file);
-      });
-
-      removePhotoBtn.addEventListener('click', () => {
-        applicantPhotoBase64 = '';
-        photoInput.value = '';
-        photoPreviewBox.innerHTML = `
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        `;
-        removePhotoBtn.style.display = 'none';
-        updateLivePreview();
-      });
-
       // Collect data object from form
       function getFormData() {
         const formData = {
@@ -773,8 +700,7 @@
           agreementDate: document.getElementById('agreementDate').value,
           executionPlace: document.getElementById('executionPlace').value.trim(),
 
-          includeSwadhar: includeSwadharInput ? includeSwadharInput.checked : false,
-          applicantPhoto: applicantPhotoBase64
+          includeSwadhar: includeSwadharInput ? includeSwadharInput.checked : false
         };
         return formData;
       }
@@ -810,15 +736,19 @@
         includeSwadharInput.addEventListener('change', updateLivePreview);
       }
 
-      // Save Record
-      form.addEventListener('submit', (e) => {
+      // Save Record to MongoDB
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const data = getFormData();
-        const saved = window.AffidavitStore.save(data);
-        if (saved) {
+        const saveBtn = form.querySelector('button[type="submit"]');
+        if (saveBtn) saveBtn.disabled = true;
+
+        try {
+          const data = getFormData();
+          const saved = await window.AffidavitStore.save(data);
+
           recordIdInput.value = saved.id;
           pageTitle.textContent = `भाडे पत्र संपादित करा (${saved.tenantName})`;
-          
+
           // Update URL without full page reload so user can keep editing or download
           const currentUrl = new URL(window.location.href);
           if (currentUrl.searchParams.get('id') !== saved.id) {
@@ -827,6 +757,10 @@
           }
 
           showToast('✓ भाडे करारनामा यशस्वीरित्या जतन केला! (Record Saved)', 'success');
+        } catch (err) {
+          showToast('जतन अयशस्वी: ' + (err.message || 'Unknown error'), 'error');
+        } finally {
+          if (saveBtn) saveBtn.disabled = false;
         }
       });
 

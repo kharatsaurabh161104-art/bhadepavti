@@ -4,3 +4,12 @@ scratch/
 *.log
 .DS_Store
 data/
+
+# Environment variables (never commit secrets)
+.env
+.env.*
+!.env.example
+
+# Build / coverage output
+dist/
+coverage/

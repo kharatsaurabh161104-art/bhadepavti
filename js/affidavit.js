@@ -225,17 +225,12 @@ const AffidavitTemplate = {
     const execPlace = this.escapeHtml(data.executionPlace) || 'पुणे';
     const agreeDate = this.formatDate(data.agreementDate);
 
-    // Photo Box markup
-    let photoHtml = '';
-    if (data.applicantPhoto) {
-      photoHtml = `<img src="${data.applicantPhoto}" alt="Applicant Photo" />`;
-    } else {
-      photoHtml = `
+    // Images are never stored. Always render the printable placeholder.
+    const photoHtml = `
         <div class="photo-placeholder">
           पासपोर्ट फोटो येथे चिकटवावा
         </div>
       `;
-    }
 
     return `
       <div class="signatures-wrapper">
@@ -322,17 +317,12 @@ const AffidavitTemplate = {
     const execPlace = this.escapeHtml(data.executionPlace) || 'पुणे';
     const agreeDate = this.formatDate(data.agreementDate);
 
-    // Photo Box markup
-    let photoHtml = '';
-    if (data.applicantPhoto) {
-      photoHtml = `<img src="${data.applicantPhoto}" alt="Applicant Photo" />`;
-    } else {
-      photoHtml = `
+    // Images are never stored. Always render the printable placeholder.
+    const photoHtml = `
         <div class="photo-placeholder">
           पासपोर्ट फोटो येथे चिकटवावा
         </div>
       `;
-    }
 
     return `
       <div class="swadhar-document-content">
@@ -429,26 +419,23 @@ const AffidavitStore = {
   getAll() {
     try {
       const raw = localStorage.getItem(this.STORAGE_KEY);
-      if (!raw) {
-        return this.seedDemoData();
-      }
-      return JSON.parse(raw);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
-      console.error('Failed to load affidavits:', e);
+      console.error('Failed to load cached affidavits:', e);
       return [];
     }
   },
 
   async fetchAll() {
-    if (window.CloudDB && window.CloudDB.isConfigured()) {
+    if (window.ApiDB) {
       try {
-        const cloudRecords = await window.CloudDB.fetchAll();
-        if (Array.isArray(cloudRecords) && cloudRecords.length) {
-          this.mergeCloudRecords(cloudRecords);
-          return this.getAll();
-        }
+        const records = await window.ApiDB.fetchAll();
+        this.syncFromDatabase(records);
+        return records;
       } catch (e) {
-        console.warn('Cloud fetch notice:', e);
+        console.warn('MongoDB fetch error:', e);
       }
     }
     return this.getAll();
@@ -460,7 +447,19 @@ const AffidavitStore = {
   },
 
   async getByIdAsync(id) {
-    return this.getById(id);
+    const cached = this.getById(id);
+    if (cached) return cached;
+
+    if (window.ApiDB) {
+      try {
+        const record = await window.ApiDB.getById(id);
+        if (record) this.upsertLocal(record);
+        return record;
+      } catch (e) {
+        console.warn('MongoDB record fetch error:', e);
+      }
+    }
+    return null;
   },
 
   syncFromDatabase(serverRecords) {
@@ -473,58 +472,47 @@ const AffidavitStore = {
     return serverRecords;
   },
 
-  save(data) {
+  upsertLocal(record) {
+    if (!record || !record.id) return;
     const list = this.getAll();
-    const now = new Date();
-    let savedRecord = null;
+    const index = list.findIndex(item => item.id === record.id);
+    if (index === -1) {
+      list.unshift(record);
+    } else {
+      list[index] = record;
+    }
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+    } catch (e) {
+      console.warn('LocalStorage cache warning:', e);
+    }
+  },
 
-    if (data.id) {
-      // Update existing
-      const index = list.findIndex(item => item.id === data.id);
-      if (index !== -1) {
-        list[index] = {
-          ...data,
-          updatedAt: now.toISOString()
-        };
-        try {
-          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
-        } catch (e) {
-          console.warn('LocalStorage quota warning:', e);
-        }
-        savedRecord = list[index];
-      }
+  async save(data) {
+    if (!window.ApiDB) {
+      throw new Error('API client not loaded. Please refresh the page.');
     }
 
+    const payload = { ...data };
+    delete payload.applicantPhoto;
+
+    const savedRecord = await window.ApiDB.save(payload);
     if (!savedRecord) {
-      // Create new
-      const newRecord = {
-        ...data,
-        id: data.id || ('AFF-' + Date.now().toString(36).toUpperCase()),
-        createdAt: data.createdAt || now.toISOString(),
-        updatedAt: now.toISOString()
-      };
-      list.unshift(newRecord);
-      try {
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
-      } catch (e) {
-        console.warn('LocalStorage quota warning:', e);
-      }
-      savedRecord = newRecord;
+      throw new Error('Server did not return the saved record');
     }
 
-    // Asynchronously sync to Cloud Firebase if configured
-    if (window.CloudDB && typeof window.CloudDB.saveRecord === 'function') {
-      window.CloudDB.saveRecord(savedRecord).catch(err => {
-        console.warn('Background cloud sync error:', err);
-      });
-    }
-
+    this.upsertLocal(savedRecord);
     return savedRecord;
   },
 
-  delete(id) {
+  async delete(id) {
+    if (!window.ApiDB) {
+      throw new Error('API client not loaded. Please refresh the page.');
+    }
+
+    await window.ApiDB.remove(id);
+
     let list = this.getAll();
-    const initialLen = list.length;
     list = list.filter(item => item.id !== id);
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
@@ -532,123 +520,7 @@ const AffidavitStore = {
       console.warn('LocalStorage delete warning:', e);
     }
 
-    // Asynchronously delete from Cloud Firebase if configured
-    if (window.CloudDB && typeof window.CloudDB.deleteRecord === 'function') {
-      window.CloudDB.deleteRecord(id).catch(err => {
-        console.warn('Background cloud delete error:', err);
-      });
-    }
-
-    return list.length < initialLen;
-  },
-
-  mergeCloudRecords(cloudRecords) {
-    if (!Array.isArray(cloudRecords)) return;
-    const local = this.getAll();
-    const map = new Map();
-
-    // Add local records to map
-    local.forEach(item => {
-      if (item && item.id) map.set(item.id, item);
-    });
-
-    // Merge cloud records (prefer whichever has newer updatedAt)
-    cloudRecords.forEach(cloudItem => {
-      if (!cloudItem || !cloudItem.id) return;
-      const localItem = map.get(cloudItem.id);
-      if (!localItem) {
-        map.set(cloudItem.id, cloudItem);
-      } else {
-        const localTime = new Date(localItem.updatedAt || 0).getTime();
-        const cloudTime = new Date(cloudItem.updatedAt || 0).getTime();
-        if (cloudTime >= localTime) {
-          map.set(cloudItem.id, cloudItem);
-        }
-      }
-    });
-
-    const merged = Array.from(map.values()).sort((a, b) => {
-      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
-    });
-
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(merged));
-    return merged;
-  },
-
-  seedDemoData() {
-    const demoRecords = [
-      {
-        id: 'AFF-DEMO001',
-        createdAt: '2026-10-25T10:30:00.000Z',
-        tenantName: 'सौरभ अजिनाथ खरात',
-        tenantAge: '२१',
-        tenantFatherName: 'अजिनाथ खरात',
-        tenantOccupation: 'विद्यार्थी / शिक्षण',
-        tenantAadhaar: '७८९० १२३४ ५६७८',
-        tenantAddress: 'मु. पो. चकोरे, ता. परांडा, जि. धाराशिव',
-        tenantCollege: 'झील कॉलेज ऑफ इंजिनिअरिंग ॲण्ड रिसर्च, नऱ्हे, पुणे',
-        tenantCourse: 'बी.टेक (रोबोटिक्स ॲण्ड ऑटोमेशन)',
-        ownerName: 'सोमनाथ बबनराव सावंत',
-        ownerAge: '४८',
-        ownerOccupation: 'व्यवसाय',
-        ownerAddress: 'फ्लॅट नं. ४०२, समर्थ रेसिडेन्सी, नऱ्हे, पुणे - ४११०४१',
-        ownerMobile: '९८२२३३४४५५',
-        academicYear: '२०२६-२०२७',
-        propertyAddress: 'फ्लॅट नं. ४०२, समर्थ रेसिडेन्सी, नऱ्हे',
-        propertyCity: 'पुणे',
-        surveyNo: '४५/२',
-        roomNo: '४०२',
-        propertyArea: '५५० चौ. फूट',
-        propertyConstruction: 'आर.सी.सी. बांधकाम',
-        monthlyRent: '३५००',
-        rentInWords: 'तीन हजार पाचशे',
-        rentPaymentDay: '१०',
-        rentStartDate: '2026-07-01',
-        rentEndDate: '2027-05-31',
-        rentDurationMonths: '११',
-        agreementDate: '2026-07-01',
-        executionPlace: 'पुणे',
-        applicantPhoto: '',
-        includeSwadhar: true
-      },
-      {
-        id: 'AFF-DEMO002',
-        createdAt: '2026-10-27T14:15:00.000Z',
-        tenantName: 'तन्मय संजू पाटोळे',
-        tenantAge: '१८',
-        tenantFatherName: 'संजू सखाराम पाटोळे',
-        tenantOccupation: 'विद्यार्थी',
-        tenantAadhaar: '२१०० ४०३२ ००६६',
-        tenantAddress: 'खोपोली, ता. खालापूर, जि. रायगड',
-        tenantCollege: 'झील कॉलेज ऑफ इंजिनिअरिंग, नऱ्हे, पुणे',
-        tenantCourse: 'बी.टेक (प्रथम वर्ष)',
-        ownerName: 'रमेश पांडुरंग शिंदे',
-        ownerAge: '५२',
-        ownerOccupation: 'नोकरी',
-        ownerAddress: 'घर नं. १२, शिवतीर्थ कॉलनी, कात्रज, पुणे - ४११०४६',
-        ownerMobile: '९४०३८०६५१०',
-        academicYear: '२०२६-२०२७',
-        propertyAddress: 'खोली नं. २, शिवतीर्थ कॉलनी, कात्रज',
-        propertyCity: 'पुणे',
-        surveyNo: '३२/१',
-        roomNo: '२',
-        propertyArea: '२०० चौ. फूट',
-        propertyConstruction: 'पक्के बांधकाम',
-        monthlyRent: '३०००',
-        rentInWords: 'तीन हजार',
-        rentPaymentDay: '०५',
-        rentStartDate: '2026-08-01',
-        rentEndDate: '2027-06-30',
-        rentDurationMonths: '११',
-        agreementDate: '2026-08-01',
-        executionPlace: 'पुणे',
-        applicantPhoto: '',
-        includeSwadhar: false
-      }
-    ];
-
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(demoRecords));
-    return demoRecords;
+    return true;
   }
 };
 
